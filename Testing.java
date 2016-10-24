@@ -9,7 +9,7 @@ public class Testing {
 
 	public static synchronized void main(String[] args) {
 		// TODO Auto-generated method stub
-		testThread t = new testThread();
+		//testThread t = new testThread();
 		AHP x = new AHP(4);
 
 		x.setWeight(0,1,10);
