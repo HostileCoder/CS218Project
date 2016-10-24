@@ -22,7 +22,8 @@ class AdopterAlgorithm implements Runnable{
 	private int eventCap=10;
 	private Map<Double, BHR_Group> groups = new HashMap<Double, BHR_Group>();
 	private int groupSize=0;
-	private ArrayList<valueSet> candidateValue = new  ArrayList<valueSet>();
+	//private ArrayList<valueSet> candidateValue = new  ArrayList<valueSet>();
+	private Map<Double,valueSet> candidateValue = new  HashMap<Double,valueSet>();
 	
 	public AdopterAlgorithm(int groupSize, History history){
 		this.groupSize = groupSize;
@@ -38,8 +39,9 @@ class AdopterAlgorithm implements Runnable{
 		}
 			
 		
-		for(int i=0;i<10;i++){
-			candidateValue.add(new valueSet((double)i));
+		for(int i=1;i<100;i++){
+			//candidateValue.add(new valueSet((double)i));
+			candidateValue.put( (double)i, new valueSet((double)i)  );
 		}
 		
 		
@@ -53,11 +55,17 @@ class AdopterAlgorithm implements Runnable{
 	
 	
 	public void body(){
-		eventNum++;				
+		eventNum++;		
+		
+		valueSet x=candidateValue.get(history.getVarRatio());
+		x.setBHR(history.getBHR());
+		x.setBIR(history.getBIR());
+		
 		if(eventNum==eventCap){
 			eventNum=0;
 			
-			
+			x.setBHR( (history.getBHR()+history.getPreBHR())/2      );
+			x.setBIR( (history.getBIR()+history.getPreBIR())/2      );
 			
 			
 			
@@ -66,7 +74,12 @@ class AdopterAlgorithm implements Runnable{
 			
 	}
 	
-	
+	public void group(){
+		
+		
+		
+		
+	}
 	
 	public Map<Double, BHR_Group> getGroups(){
 		return groups;

@@ -7,6 +7,8 @@ public class History {
 	private double BHR=0.0;
 	private double BIR=0.0;
 	private double varRatio=1.0;
+	private double preBHR=0.0;
+	private double preBIR=0.0;
 	
 	public History(double totalHit ,double numInsert,double totalRequest,double varRatio){
 		this.totalHit=totalHit;
@@ -21,6 +23,8 @@ public class History {
 	}
 	public void incTotalHit() {
 		totalHit = totalHit+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
@@ -29,6 +33,8 @@ public class History {
 	}
 	public void incNumInsert() {
 		numInsert = numInsert+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
@@ -37,6 +43,8 @@ public class History {
 	}
 	public void incTotalRequest() {
 		totalRequest = totalRequest+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
@@ -70,6 +78,26 @@ public class History {
 
 	public void setVarRatio(double varRatio) {
 		this.varRatio = varRatio;
+	}
+
+
+	public double getPreBHR() {
+		return preBHR;
+	}
+
+
+	public void setPreBHR(double preBHR) {
+		this.preBHR = preBHR;
+	}
+
+
+	public double getPreBIR() {
+		return preBIR;
+	}
+
+
+	public void setPreBIR(double preBIR) {
+		this.preBIR = preBIR;
 	}
 	
 }

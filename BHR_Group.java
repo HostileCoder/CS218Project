@@ -11,7 +11,7 @@ public class BHR_Group {
 	
 	private double rep=0;
 	private String name="";
-	private Map<Integer,Double> pair =new HashMap<Integer,Double>();
+	//private Map<Integer,Double> pair =new HashMap<Integer,Double>();
 	private ArrayList<valueSet> valueSetList = new ArrayList<valueSet>();
 	
 	public BHR_Group(String name){
@@ -19,7 +19,7 @@ public class BHR_Group {
 	}
 	
 	
-	public void add(valueSet v){
+	public void addvalue(valueSet v){
 		if(smallestBIR==null ){
 			valueSetList.add(v);
 			smallestBIR=v;
