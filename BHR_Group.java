@@ -12,7 +12,8 @@ public class BHR_Group {
 	private double rep=0;
 	private String name="";
 	//private Map<Integer,Double> pair =new HashMap<Integer,Double>();
-	private ArrayList<valueSet> valueSetList = new ArrayList<valueSet>();
+	//private ArrayList<valueSet> valueSetList = new ArrayList<valueSet>();
+	private Map<Double,valueSet> valueSetList = new  HashMap<Double,valueSet>();
 	
 	public BHR_Group(String name){
 		this.name=name;
@@ -21,14 +22,14 @@ public class BHR_Group {
 	
 	public void addvalue(valueSet v){
 		if(smallestBIR==null ){
-			valueSetList.add(v);
+			valueSetList.put(v.getRatio(),v);
 			smallestBIR=v;
 		
 		}		
 		
 		else if(v.getBIR()<smallestBIR.getBIR()){
 			smallestBIR=v;
-			valueSetList.add(v);
+			valueSetList.put(v.getRatio(),v);
 		}		
 		
 	}
@@ -41,7 +42,7 @@ public class BHR_Group {
 	
 	public double findRep(){
 		double sum=0.0;
-		for(valueSet e: valueSetList ){
+		for(valueSet e: valueSetList.values() ){
 			sum=sum+e.getBHR();
 		}	
 		return rep=sum/(double)valueSetList.size();
@@ -78,6 +79,8 @@ public class BHR_Group {
 	}
 
 
-	
+	public Map<Double,valueSet> getValueSetList() {
+		return valueSetList;
+	}
 	
 }
