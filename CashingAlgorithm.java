@@ -1,74 +1,99 @@
 package CS218Project;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.cloudbus.cloudsim.File;
 import org.cloudbus.cloudsim.HarddriveStorage;
-import org.cloudbus.cloudsim.Host;
 
 
 
 class CashingAlgorithm implements Runnable{
-		//private List <File> fileList=new ArrayList <File>();
-		private HarddriveStorage h = null;
-		private ArrayList <String> Evict=new ArrayList <String>();
-		Map<String, UE_Context> CachedState = new TreeMap<String, UE_Context>();
 		
-		private History history=null;
+		private HarddriveStorage Harddrive = null;
+		private ArrayList <String> Evict=new ArrayList <String>();
+		private Map<String, UE_Context> CachedState = new TreeMap<String, UE_Context>();
+		private ArrayList <UE_Context> requests = new ArrayList<UE_Context>();
+		private ArrayList <History> records = new ArrayList<History>();
+		
 		private double used=0;
 		private double capacity=0;
-		private boolean hit=true;
-		private UE_Context file=null;
-		private AHP ahp =new AHP(4);
-		//private double varRatio=1.0;
 		private double freespace=0;
 		private double sumWeight=0;
-		private boolean hasRequest=false;
+		private UE_Context file=null;
+		private AHP ahp =new AHP(4);
+		private Ratio ratio=null;
+
 		
-		public CashingAlgorithm(Map<String, UE_Context> CachedState, HarddriveStorage h, History history ){
+		public CashingAlgorithm(Map<String, UE_Context> CachedState, HarddriveStorage Harddrive, ArrayList <History> records, Ratio ratio){
 			this.CachedState=CachedState;
-			this.h=h;
-			this.history=history;
-			
+			this.Harddrive=Harddrive;
+			this.records=records;
+			this.ratio=ratio;
 			ahp.setWeight(0,1,10);
 			ahp.setWeight(0,2,10);
 			ahp.setWeight(0,3,10);
-			ahp.setWeight(1,2,history.getVarRatio());
+			ahp.setWeight(1,2,ratio.getRatio());
 			ahp.setWeight(1,3,10);
 			ahp.setWeight(2,3,10);
+			
 		}
 		
 		@Override
-		public void run() {
+		public void run() 
+		{
 			// TODO Auto-generated method stub	
-			while(true){
-				if(hasRequest)
-				 handleRequest();
-			}
-						
+			double TotalHit = 0.0;
+			double NumInsert = 0.0;
+			double TotalRequest = 0.0;
+				
+			while(true)	
+			{
+				while(!requests.isEmpty())
+				{
+					
+					double r= ratio.getRatio();
+					
+					ahp.setWeight(1,2,r);									
+					
+					boolean result= handleRequest();					
+					TotalRequest++;
+													
+					if(result==false){
+						TotalHit++;			
+					}else{
+						TotalRequest++;
+					}
+					
+					records.add(new History(TotalHit, NumInsert, TotalRequest,r));
+					
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				}
+			}				
 		}
 		
 		
 		public boolean handleRequest(){
-			history.incTotalRequest();
-			
-			used=h.getCurrentSize();
-			capacity=h.getCapacity();
-			ahp.setWeight(1,2,history.getVarRatio());
+			file=requests.remove(0);			
+			used=Harddrive.getCurrentSize();
+			capacity=Harddrive.getCapacity();
 			ahp.findWeight();
 			
 			if(CachedState.get(file.getName()) != null){
-				history.incTotalHit();
 				return false;
 			}
 			
 			if(file.getSize()+used<=capacity){
-				history.incNumInsert();
 				updateRatio(file);
+				used=used+file.getSize();
 				insert(file);
 				return true;
 			}
@@ -93,7 +118,6 @@ class CashingAlgorithm implements Runnable{
 			}
 								
 			if(freespace<file.getSize()){
-				history.incTotalHit();
 				return false;
 			}
 						
@@ -103,22 +127,35 @@ class CashingAlgorithm implements Runnable{
 			}	
 			//remove from Cache			
 			for(String e: Evict){		
-				h.deleteFile(e);			
+				Harddrive.deleteFile(e);			
 			}	
 			
-			history.incNumInsert();
+			Evict.clear();
 			insert(file);
 			return true;
 		}
 		
 		
-		
-		
-		
+		public void updateRatio(UE_Context file){
+			double [] d=ahp.getResult();
+			if(file.getCriteria().equals("00")){
+				file.setProbility(d[0]);
+			}else if(file.getCriteria().equals("01")){
+				file.setProbility(d[1]);
+			}else if(file.getCriteria().equals("10")){
+				file.setProbility(d[2]);
+			}else if(file.getCriteria().equals("11")){
+				file.setProbility(d[3]);
+			}
+		}
+
+	
+		public void addrequest(File file){
+			 requests.add((UE_Context) file);
+		}
 		
 		public void insert(UE_Context f){
 			CachedState.put(f.getName(), f);
-			//Collections.sort(CachedState);
 		}
 		
 		
@@ -141,27 +178,7 @@ class CashingAlgorithm implements Runnable{
 		public AHP getAhp() {
 			return ahp;
 		}
-
-//		public double getVarRatio() {
-//			return varRatio;
-//		}
-//
-//		public void setVarRatio(double varRatio) {
-//			this.varRatio = varRatio;
-//		}
 		
-		public void updateRatio(UE_Context file){
-			double [] d=ahp.getResult();
-			if(file.getCriteria().equals("00")){
-				file.setProbility(d[0]);
-			}else if(file.getCriteria().equals("01")){
-				file.setProbility(d[1]);
-			}else if(file.getCriteria().equals("10")){
-				file.setProbility(d[2]);
-			}else if(file.getCriteria().equals("11")){
-				file.setProbility(d[3]);
-			}
-		}
 
 		public ArrayList <String> getEvict() {
 			return Evict;

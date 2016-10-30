@@ -1,35 +1,32 @@
 package CS218Project;
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class BHR_Group {
+public class Group {
 	private valueSet smallestBIR=null;
-	private valueSet largestBHR=null;
+
 	
 	private double rep=0;
 	private String name="";
-	//private Map<Integer,Double> pair =new HashMap<Integer,Double>();
-	//private ArrayList<valueSet> valueSetList = new ArrayList<valueSet>();
 	private Map<Double,valueSet> valueSetList = new  HashMap<Double,valueSet>();
 	
-	public BHR_Group(String name){
-		this.name=name;
+	public Group(String name){
+		this.setName(name);
 	}
 	
 	
 	public void addvalue(valueSet v){
 		if(smallestBIR==null ){
-			valueSetList.put(v.getRatio(),v);
+			valueSetList.put(v.getValueRatio(),v);
 			smallestBIR=v;
 		
 		}		
 		
-		else if(v.getBIR()<smallestBIR.getBIR()){
+		else if(v.getValueBIR()<smallestBIR.getValueBIR()){
 			smallestBIR=v;
-			valueSetList.put(v.getRatio(),v);
+			valueSetList.put(v.getValueRatio(),v);
 		}		
 		
 	}
@@ -43,27 +40,14 @@ public class BHR_Group {
 	public double findRep(){
 		double sum=0.0;
 		for(valueSet e: valueSetList.values() ){
-			sum=sum+e.getBHR();
+			sum=sum+e.getValueBHR();
 		}	
-		return rep=sum/(double)valueSetList.size();
+		rep=sum/(double)valueSetList.size();
+		return rep;
 	}
 
 	
-//	public void add(int x, double y){
-//		pair.put(x, y);
-//		rep=findRep();
-//	}
-//	
-//	public double getMax(){
-//		return Collections.max( pair.values());
-//	}
-//	
-//	public Map<Integer,Double> getPair() {
-//		return pair;
-//	}
-//	public void setPair(Map<Integer,Double> pair) {
-//		this.pair = pair;
-//	}
+
 	public double getRep() {
 		return rep;
 	}
@@ -81,6 +65,16 @@ public class BHR_Group {
 
 	public Map<Double,valueSet> getValueSetList() {
 		return valueSetList;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

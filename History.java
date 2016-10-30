@@ -21,38 +21,15 @@ public class History {
 	public double getTotalHit() {
 		return totalHit;
 	}
-	public void incTotalHit() {
-		totalHit = totalHit+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
-		setBHR(totalHit/totalRequest);
-		setBIR(numInsert/totalRequest);
-	}
+
 	public double getNumInsert() {
 		return numInsert;
 	}
-	public void incNumInsert() {
-		numInsert = numInsert+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
-		setBHR(totalHit/totalRequest);
-		setBIR(numInsert/totalRequest);
-	}
-	public double getTotalRequest() {
-		return totalRequest;
-	}
-	public void incTotalRequest() {
-		totalRequest = totalRequest+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
-		setBHR(totalHit/totalRequest);
-		setBIR(numInsert/totalRequest);
-	}
-
-
+	
+	
 
 	public double getBHR() {
-		return BHR;
+		return totalHit/totalRequest;
 	}
 
 
@@ -62,7 +39,7 @@ public class History {
 
 
 	public double getBIR() {
-		return BIR;
+		return numInsert/totalRequest;
 	}
 
 
@@ -100,4 +77,31 @@ public class History {
 		this.preBIR = preBIR;
 	}
 	
+	
+	
+//	public void incTotalHit() {
+//	totalHit = totalHit+1;
+//	setPreBHR(BHR);
+//	setPreBIR(BIR);
+//	setBHR(totalHit/totalRequest);
+//	setBIR(numInsert/totalRequest);
+//}
+//
+//public void incNumInsert() {
+//	numInsert = numInsert+1;
+//	setPreBHR(BHR);
+//	setPreBIR(BIR);
+//	setBHR(totalHit/totalRequest);
+//	setBIR(numInsert/totalRequest);
+//}
+//public double getTotalRequest() {
+//	return totalRequest;
+//}
+//public void incTotalRequest() {
+//	totalRequest = totalRequest+1;
+//	setPreBHR(BHR);
+//	setPreBIR(BIR);
+//	setBHR(totalHit/totalRequest);
+//	setBIR(numInsert/totalRequest);
+//}
 }

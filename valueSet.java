@@ -1,6 +1,5 @@
 package CS218Project;
 
-import java.util.Comparator;
 
 public class valueSet {
 	private double ratio;
@@ -11,57 +10,57 @@ public class valueSet {
 		this.ratio=ratio;
 	}
 
-	public double getRatio() {
+	public double getValueRatio() {
 		return ratio;
 	}
 
-	public void setRatio(double ratio) {
+	public void setValueRatio(double ratio) {
 		this.ratio = ratio;
 	}
 
-	public double getBHR() {
+	public double getValueBHR() {
 		return BHR;
 	}
 
-	public void setBHR(double bHR) {
+	public void setValueBHR(double bHR) {
 		BHR = bHR;
 	}
 
-	public double getBIR() {
+	public double getValueBIR() {
 		return BIR;
 	}
 
-	public void setBIR(double bIR) {
+	public void setValueBIR(double bIR) {
 		BIR = bIR;
 	}
 	
 	
 	
-	public static Comparator<valueSet> compareByBHR
-    	= new Comparator<valueSet>() {		
-    		public int compare(valueSet v1, valueSet v2) {
-    			if(v1.getBHR()==v2.getBHR()){
-    				return 0;
-    			}else if(v1.getBHR()>v2.getBHR()){
-    				return -1;
-    			}
-    				return 1;
-    		}
-
-    	};
-    	
-    public static Comparator<valueSet> compareByBIR
-    	= new Comparator<valueSet>() {		
-    		public int compare(valueSet v1, valueSet v2) {
-    			if(v1.getBIR()==v2.getBIR()){
-    				return 0;
-    			}else if(v1.getBIR()>v2.getBIR()){
-    				return -1;
-    			}
-    				return 1;
-    		}
-
-    	};
+//	public static Comparator<valueSet> compareByBHR
+//    	= new Comparator<valueSet>() {		
+//    		public int compare(valueSet v1, valueSet v2) {
+//    			if(v1.getBHR()==v2.getBHR()){
+//    				return 0;
+//    			}else if(v1.getBHR()>v2.getBHR()){
+//    				return -1;
+//    			}
+//    				return 1;
+//    		}
+//
+//    	};
+//    	
+//    public static Comparator<valueSet> compareByBIR
+//    	= new Comparator<valueSet>() {		
+//    		public int compare(valueSet v1, valueSet v2) {
+//    			if(v1.getBIR()==v2.getBIR()){
+//    				return 0;
+//    			}else if(v1.getBIR()>v2.getBIR()){
+//    				return -1;
+//    			}
+//    				return 1;
+//    		}
+//
+//    	};
 	
 
 }
