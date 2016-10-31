@@ -1,10 +1,11 @@
 package CS218Project;
 
+import java.util.Comparator;
 
 public class valueSet {
 	private double ratio;
-	private double BHR=0.5;
-	private double BIR=0.5;
+	private double BHR=0.0;
+	private double BIR=0.0;
 	
 	valueSet(double ratio){
 		this.ratio=ratio;
@@ -34,7 +35,9 @@ public class valueSet {
 		BIR = bIR;
 	}
 	
-	
+	public String toString(){
+		return "Ratio: "+ratio+" BHR: "+BHR+" BIR: "+BIR;	
+	}
 	
 //	public static Comparator<valueSet> compareByBHR
 //    	= new Comparator<valueSet>() {		
@@ -49,18 +52,18 @@ public class valueSet {
 //
 //    	};
 //    	
-//    public static Comparator<valueSet> compareByBIR
-//    	= new Comparator<valueSet>() {		
-//    		public int compare(valueSet v1, valueSet v2) {
-//    			if(v1.getBIR()==v2.getBIR()){
-//    				return 0;
-//    			}else if(v1.getBIR()>v2.getBIR()){
-//    				return -1;
-//    			}
-//    				return 1;
-//    		}
-//
-//    	};
+    public static Comparator<valueSet> compareByBIR
+    	= new Comparator<valueSet>() {		
+    		public int compare(valueSet v1, valueSet v2) {
+    			if(v1.getValueBIR()==v2.getValueBIR()){
+    				return 0;
+    			}else if(v1.getValueBIR()>v2.getValueBIR()){
+    				return -1;
+    			}
+    				return 1;
+    		}
+
+    	};
 	
 
 }

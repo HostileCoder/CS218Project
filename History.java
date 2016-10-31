@@ -29,7 +29,8 @@ public class History {
 	
 
 	public double getBHR() {
-		return totalHit/totalRequest;
+		//return totalHit/totalRequest;
+		return BHR;
 	}
 
 
@@ -39,7 +40,8 @@ public class History {
 
 
 	public double getBIR() {
-		return numInsert/totalRequest;
+		//return numInsert/totalRequest;
+		return BIR;
 	}
 
 
@@ -77,31 +79,34 @@ public class History {
 		this.preBIR = preBIR;
 	}
 	
+	public String toString(){
+		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio;	
+	}
 	
 	
-//	public void incTotalHit() {
-//	totalHit = totalHit+1;
-//	setPreBHR(BHR);
-//	setPreBIR(BIR);
-//	setBHR(totalHit/totalRequest);
-//	setBIR(numInsert/totalRequest);
-//}
-//
-//public void incNumInsert() {
-//	numInsert = numInsert+1;
-//	setPreBHR(BHR);
-//	setPreBIR(BIR);
-//	setBHR(totalHit/totalRequest);
-//	setBIR(numInsert/totalRequest);
-//}
-//public double getTotalRequest() {
-//	return totalRequest;
-//}
-//public void incTotalRequest() {
-//	totalRequest = totalRequest+1;
-//	setPreBHR(BHR);
-//	setPreBIR(BIR);
-//	setBHR(totalHit/totalRequest);
-//	setBIR(numInsert/totalRequest);
-//}
+	public void incTotalHit() {
+		totalHit = totalHit+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
+		setBHR(totalHit/totalRequest);
+		setBIR(numInsert/totalRequest);
+	}
+
+	public void incNumInsert() {
+		numInsert = numInsert+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
+		setBHR(totalHit/totalRequest);
+		setBIR(numInsert/totalRequest);
+	}
+	public double getTotalRequest() {
+		return totalRequest;
+	}
+	public void incTotalRequest() {
+		totalRequest = totalRequest+1;
+		setPreBHR(BHR);
+		setPreBIR(BIR);
+		setBHR(totalHit/totalRequest);
+		setBIR(numInsert/totalRequest);
+	}
 }
