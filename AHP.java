@@ -27,11 +27,11 @@ public class AHP {
 		double sum=mx.elementSum();		
 		
 		while(true){
-			mx=mx.mult(mx);
-			sum=mx.elementSum();		
+			SimpleMatrix tmx=mx.mult(mx);
+			sum=tmx.elementSum();		
 			for(int i=0;i<this.size;i++){
 				for(int j=0;j<this.size;j++){
-					rowWeight[i]=rowWeight[i]+mx.get(i, j);
+					rowWeight[i]=rowWeight[i]+tmx.get(i, j);
 				}				
 				rowWeight[i]=rowWeight[i]/sum;
 				rowWeight[i]=Math.round(rowWeight[i]*1000.0)/1000.0;

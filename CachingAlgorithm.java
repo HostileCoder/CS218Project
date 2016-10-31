@@ -64,13 +64,19 @@ class CachingAlgorithm implements Runnable{
 				while(!requests.isEmpty())
 				{
 					
-					double r= ratio.getRatio();					
-					ahp.setWeight(1,2,r);									
+					double r= ratio.getRatio();	
+					Log.printLine("The current ratio is: "+r);
+					
+					setWeights(r);	
+					ahp.findWeight();
+					
+					Log.printLine("Weight Vector is:");
+					Log.printLine(ahp.getResult()[0]+" "+ahp.getResult()[1]+" "+ahp.getResult()[2]+" "+ahp.getResult()[3]);
 					
 					int result= handleRequest();
 					history.incTotalRequest();
 					
-					Log.printLine(result);
+					Log.printLine("return "+result);
 						//TotalRequest++;													
 					if(result==1){
 						history.incTotalHit();
@@ -106,7 +112,7 @@ class CachingAlgorithm implements Runnable{
 			
 			Log.printLine("Used:"+used+" Capacity:"+capacity);
 			
-			ahp.findWeight();
+		
 			updateRatio(file);
 		
 			if(CacheState.contains(file)){
@@ -128,11 +134,11 @@ class CachingAlgorithm implements Runnable{
 						
 			for(UE_Context x : CacheState) {
 
-				if(sumWeight+x.findweight()<file.getWeight()){
+				if(sumWeight+x.getWeight()<file.getWeight()){
 					 sumWeight = sumWeight + x.getWeight();
 					 freespace = freespace + x.getSize();
 					 Evict.add(x);
-					 Log.printLine(x.getName()+" evicted");
+					 Log.printLine(x.getName()+" chosen for eviction");
 					 if(freespace>file.getSize()){
 						 break;
 					 }						
@@ -146,12 +152,11 @@ class CachingAlgorithm implements Runnable{
 						
 			//remove from CachedState
 			for(UE_Context u: Evict){
-				CacheState.remove(u);
+				remove(u);
 				Log.printLine("evict cachedstate..."+ u.getName());
 												
 			}	
 			//remove from Cache
-			Log.printLine("evict hardrive");
 			for(UE_Context e: Evict){
 				Harddrive.deleteFile(e);
 				Log.printLine("evict Harddrive..."+ e.getName());
@@ -177,6 +182,7 @@ class CachingAlgorithm implements Runnable{
 			}else if(file.getCriteria()==3){
 				file.setProbility(d[3]);
 			}
+			Collections.sort(CacheState);
 		}
 
 	
@@ -194,6 +200,11 @@ class CachingAlgorithm implements Runnable{
 		
 		public void insert(UE_Context f){
 			CacheState.add(f);
+			Collections.sort(CacheState);
+		}
+		
+		public void remove(UE_Context f){
+			CacheState.remove(f);
 			Collections.sort(CacheState);
 		}
 		
@@ -223,7 +234,14 @@ class CachingAlgorithm implements Runnable{
 		}
 
 
-
+		public void setWeights(double r){
+			ahp.setWeight(0,1,10);
+			ahp.setWeight(0,2,10);
+			ahp.setWeight(0,3,10);
+			ahp.setWeight(1,2,r);
+			ahp.setWeight(1,3,10);
+			ahp.setWeight(2,3,10);
+		}
 		 
 }
 	

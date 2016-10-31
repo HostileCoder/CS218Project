@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.cloudbus.cloudsim.HarddriveStorage;
+import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.ParameterException;
 import org.cloudbus.cloudsim.core.CloudSim;
 
@@ -25,7 +26,7 @@ public class CacheTest {
 		ahp.setWeight(1,3,10);
 		ahp.setWeight(2,3,10);
 		ahp.findWeight();
-		
+		//Log.printLine(ahp.getMX());
 		
 //		for(int i=0;i<ahp.getResult().length;i++)
 //			System.out.println(ahp.getResult()[i]);
@@ -35,7 +36,7 @@ public class CacheTest {
 		UE.add(new UE_Context(Integer.toString(2),1,0.5,5,3));
 		UE.add(new UE_Context(Integer.toString(3),1,0.5,5,3));
 		UE.add(new UE_Context(Integer.toString(4),1,0.5,5,2));
-		UE.add(new UE_Context(Integer.toString(5),1,0.5,5,1));
+		UE.add(new UE_Context(Integer.toString(5),1,0.5,5,0));
 		UE.add(new UE_Context(Integer.toString(6),1,0.5,5,3));
 		UE.add(new UE_Context(Integer.toString(7),1,0.5,5,2));
 		UE.add(new UE_Context(Integer.toString(8),1,0.5,5,1));
@@ -92,12 +93,19 @@ public class CacheTest {
 			try{
 				UE_Context u=UE.get(Integer.parseInt(s) );
 				caching.addrequest(u);
+				Log.printLine("Try to insert");
+				Log.printLine(u.getName()+" "+u.getRatio()+" "+u.getProbility());
+				Log.printLine("");
 			    }
 		    catch(Exception ex) {
 		    	if(s.matches("[r][0-9]")){
 		    		s=s.substring(s.length() - 1);
 		    		ratio.setRatio(Integer.parseInt(s));
-		    		System.out.println("change ratio to:"+s);
+		    		System.out.println("change ratio to:"+Integer.parseInt(s));
+		    	}else if(s.matches("[l]")){
+		    		for(UE_Context u: caching. getCacheState()){
+		    			System.out.println(u.getName()+" "+u.getRatio()+" "+u.getProbility());
+		    		}
 		    	}
 //				UE_Context u=UE.get(rn.nextInt(100));
 //				caching.addrequest(u);
