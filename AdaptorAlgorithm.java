@@ -264,6 +264,8 @@ class AdaptorAlgorithm implements Runnable{
 		this.localpreBIR = localpreBIR;
 	}
 	
-	
+	public ArrayList<History> getRecords() {
+		return records;
+	}
 
 }
