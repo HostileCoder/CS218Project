@@ -1,7 +1,7 @@
 package CS218Project;
 
-public class testThread implements Runnable{
-	public testThread(){
+public class ZtestThread implements Runnable{
+	public ZtestThread(){
 		new Thread(this, "Answer").start();
 	}
 	@Override

@@ -4,13 +4,19 @@ import java.util.Comparator;
 
 public class valueSet {
 	private double ratio;
-	private double BHR=0.0;
-	private double BIR=0.0;
+	private double BHR=Math.random();
+	private double BIR=Math.random();
 	
 	valueSet(double ratio){
 		this.ratio=ratio;
 	}
 
+	valueSet(double ratio,double BHR,double BIR){
+		this.ratio=ratio;
+		this.BHR=BHR;
+		this.BIR=BIR;
+	}
+	
 	public double getValueRatio() {
 		return ratio;
 	}

@@ -18,11 +18,6 @@ class AdaptorAlgorithm implements Runnable{
 	private int eventNum=0;
 	private int eventCap=3;
 	private int groupSize=0;
-	private double localratio=0.0;
-	private double localBHR=0.0;
-	private double localBIR=0.0;
-	private double localpreBHR=0.0;
-	private double localpreBIR=0.0;
 	private ArrayList <History> records = new ArrayList<History>();
 	private Ratio ratio=null;
 	
@@ -37,7 +32,7 @@ class AdaptorAlgorithm implements Runnable{
 		double name=0.0;
 		
 		for(int i=0;i<groupSize;i++){
-			Group g= new Group(Double.toString(name));
+			Group g= new Group(name);
 			groups.put(name, g);
 			name=name+threshold;
 			name=Math.round(name*10.0)/10.0;
@@ -46,27 +41,15 @@ class AdaptorAlgorithm implements Runnable{
 		//ratio
 		for(int i=1;i<100;i++){
 			candidateValue.put( (double)i, new valueSet((double)i)  );
+			
+			double k = Math.round((double)1/i*1000.0)/1000.0;
+			candidateValue.put( k, new valueSet(k)  );
 		}
 		
 		for(valueSet e:candidateValue.values() ){
 			group(e);
 		}	
 		
-	
-//		ArrayList<Group> x = new ArrayList<Group>();
-//		for(Group g:groups.values()){
-//			x.add(g);
-//		}
-//		x.get(3).setRep(4.5);
-//		Collections.sort(x, Group.compareByRep);
-//		System.out.println(x.get(0));
-		
-//		for(Group g: groups.values()){
-//			System.out.println("Group "+g.getName()+" size:"+ g.getValueSetList().size());
-//			for(valueSet v: g.getValueSetList().values()){
-//				System.out.println(v);
-//			}
-//		}
 	}
 
 	
@@ -74,6 +57,8 @@ class AdaptorAlgorithm implements Runnable{
 	@Override
 	public void run() {
 
+		double preBHR=0;
+		double preBIR=0;
 		while(true)
 		{	
 			try {
@@ -81,67 +66,72 @@ class AdaptorAlgorithm implements Runnable{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			
 			while(! records.isEmpty()){
-				body();
-			}
-		}
-	}
-	
-	
-	public void body(){
+				History history = records.remove(0);
 				
-		History history = records.remove(0);
-		System.out.println("Adopt: "+history);
-		
-		eventNum++;				
-		valueSet x=candidateValue.get(history.getVarRatio());
-		x.setValueBHR(history.getBHR());
-		x.setValueBIR(history.getBIR());
-		
-		if(eventNum==eventCap){
-			eventNum=0;			
-			x.setValueBHR(( history.getBHR() + history.getPreBHR() )/2      );
-			x.setValueBIR(( history.getBIR() + history.getPreBIR() )/2      );
-			
-			for(Group g: groups.values()){
-				if(g.getValueSetList().containsKey(x.getValueRatio())){
-					g.getValueSetList().remove(x.getValueRatio());
-				}
-			}			
-			group(x);	
-			
-			//group with largest representative value (BHR)
-			double max=0.0;
-			Group selected = null;
-			for(Group g: groups.values()){
-				if(g.getRep()>=max){
-					max=g.getRep();
-					selected = g;
-				}
-			}
-			
-			//ratio with smallest BIR in the group
-			double newRatio;
-			if(selected.valueSetWithSmallestBIR()==null){
-				newRatio=ratio.getRatio();
-			}else
-				newRatio=selected.valueSetWithSmallestBIR().getValueRatio();
+				eventNum++;				
+				valueSet x=candidateValue.get(history.getVarRatio());
+				x.setValueBHR(history.getBHR());
+				x.setValueBIR(history.getBIR());
 				
-			Log.printLine("");	
-			Log.printLine("Adopt	group selected:"+selected);	
-			Log.printLine("Adopt	New Ratio:"+newRatio);
-			Log.printLine("	BHR: "+history.getBHR()+" PreBHR "+history.getPreBHR());	
-			Log.printLine("	BIR: "+history.getBIR()+" PreBIR "+history.getPreBIR());							
-			for(valueSet v:selected.getValueSetList().values()){
-				Log.printLine(v);
-			}
-			
-			ratio.setRatio(newRatio);	
-			
-		
-		}
+				if(eventNum==eventCap){
+					//Log.printLine("Adopt	Retrieved"+ x);
+					eventNum=0;			
+					double h=( 2*history.getBHR() + preBHR )/3; 
+					double i=( 2*history.getBIR() + preBIR )/3;
+					x.setValueBHR(h);
+					x.setValueBIR(i);
+					preBHR=h;
+				    preBIR=i;
 					
+				    Log.printLine("Adopt	modified"+ x);
+					for(Group g: groups.values()){
+						if(g.getValueSetList().containsKey(x.getValueRatio())){
+							g.getValueSetList().remove(x.getValueRatio());
+							g.findRep();
+						}
+					}			
+					group(x);	
+					
+					//group with largest representative value (BHR)			
+					Group selected = null;				
+					ArrayList<Group> glist = new ArrayList<Group>();
+					for(Group g: groups.values()){
+						glist.add(g);
+						//System.out.println(g.getName()+" "+g.getRep());
+					}					
+					Collections.sort(glist, Group.compareByRep);
+					selected = glist.get(0);
+					
+					
+					
+					//ratio with smallest BIR in the group
+					double newRatio;
+					if(selected.valueSetWithSmallestBIR()==null){
+						newRatio=ratio.getRatio();
+					}else
+						newRatio=selected.valueSetWithSmallestBIR().getValueRatio();
+						
+//					Log.printLine("");	
+//					Log.printLine("Adopt	group selected:"+selected);	
+//					Log.printLine("Adopt	New Ratio:"+newRatio);
+//					Log.printLine("Adopt	History inserted: "+history);		
+//					Log.printLine("Adopt	Selected Group Members ");
+					for(valueSet v:selected.getValueSetList().values()){
+						//Log.printLine("     	"+v);
+					}
+					//Log.printLine(" ");
+					
+					ratio.setRatio(newRatio);	
+					
+				
+				}
+			}
+		}
 	}
+	
 	
 	public void group(valueSet v){
 		double x = v.getValueBHR();
@@ -206,66 +196,11 @@ class AdaptorAlgorithm implements Runnable{
 
 
 
-	public double getLocalratio() {
-		return localratio;
-	}
-
-
-
-	public void setLocalratio(double localratio) {
-		this.localratio = localratio;
-	}
-
-
-
-	public double getLocalBHR() {
-		return localBHR;
-	}
-
-
-
-	public void setLocalBHR(double localBHR) {
-		this.localBHR = localBHR;
-	}
-
-
-
-	public double getLocalBIR() {
-		return localBIR;
-	}
-
-
-
-	public void setLocalBIR(double localBIR) {
-		this.localBIR = localBIR;
-	}
-
-
-
-	public double getLocalpreBHR() {
-		return localpreBHR;
-	}
-
-
-
-	public void setLocalpreBHR(double localpreBHR) {
-		this.localpreBHR = localpreBHR;
-	}
-
-
-
-	public double getLocalpreBIR() {
-		return localpreBIR;
-	}
-
-
-
-	public void setLocalpreBIR(double localpreBIR) {
-		this.localpreBIR = localpreBIR;
-	}
-	
-	public ArrayList<History> getRecords() {
-		return records;
-	}
-
+//	double max=0.0;
+//	for(Group g: groups.values()){
+//		if(g.getRep()>=max){
+//			max=g.getRep();
+//			selected = g;
+//		}
+//	}
 }

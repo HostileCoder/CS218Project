@@ -80,7 +80,7 @@ public class History {
 	}
 	
 	public String toString(){
-		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio;	
+		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio+" BHR: "+ BHR+" BIR: "+ BIR;	
 	}
 	
 	

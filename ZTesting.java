@@ -16,36 +16,19 @@ import org.cloudbus.cloudsim.core.CloudSim;
 
 
 
-public class Testing {
+public class ZTesting {
 
 	public static synchronized void main(String[] args) throws ParameterException {
 		// TODO Auto-generated method stub
-//		testThread t = new testThread();
-//		AHP x = new AHP(4);
-//
-//		x.setWeight(0,1,10);
-//		x.setWeight(0,2,10);
-//		x.setWeight(0,3,10);
-//		x.setWeight(1,2,6);
-//		x.setWeight(1,3,10);
-//		x.setWeight(2,3,10);
-//
-//		System.out.println(x.getMX());
-//
-//		x.findWeight();
-//		System.out.println(x);
-//				
-//		synchronized (t) {
-//		    t.notify();
-//		}	
+
 		CloudSim.init(1, Calendar.getInstance(), false);
 		
-		ArrayList< UE_Context> UE = new ArrayList< UE_Context>();
-		HarddriveStorage Harddrive = new HarddriveStorage("hardd1",9999999);
+		
+		HarddriveStorage Harddrive = new HarddriveStorage("hardd1",30);
 		Ratio ratio = new Ratio(1);
 		ArrayList <History> records = new 	ArrayList <History>();
 
-		
+		ArrayList< UE_Context> UE = new ArrayList< UE_Context>();
 		Random rn = new Random();
 		Random oz=new Random(); 
 		for(int i=0;i<100;i++){
@@ -61,12 +44,6 @@ public class Testing {
 			}
 		}
 		
-//		UE.get(4).setRatio(1);
-//		Collections.sort(UE);
-//		for( UE_Context x:UE){
-//			System.out.println(x);
-//		}
-
 		
 		CachingAlgorithm caching = new CachingAlgorithm(Harddrive, records, ratio);
 		
@@ -77,25 +54,51 @@ public class Testing {
 		Thread t2 = new Thread(adopt);
 		t2.start();
 		
-
-	
-		Scanner scan=null;
+		int x=200;
 		while(true){
-			scan=new Scanner(System.in);
-			String s = scan.next();
-			
-			try{
-				UE_Context u=UE.get(Integer.parseInt(s) );
+			UE_Context u=UE.get(oz.nextInt(99));
+			double d = Math.random();
+			int c = u.getCriteria();
+			if(c<2 && d <.8){
 				caching.addrequest(u);
-			    }
-		    catch(Exception ex) {
-				UE_Context u=UE.get(rn.nextInt(100));
+			}else if(c>=2 && d <.2){
 				caching.addrequest(u);
-				System.out.println(u.getName()+" requested");
-			    }
-			
+			}
 		}
+		
+		
+	
+//		Scanner scan=null;
+//		while(true){
+//			scan=new Scanner(System.in);
+//			String s = scan.next();
+//			
+//			try{
+//				UE_Context u=UE.get(Integer.parseInt(s) );
+//				caching.addrequest(u);
+//			    }
+//		    catch(Exception ex) {
+//				UE_Context u=UE.get(rn.nextInt(100));
+//				caching.addrequest(u);
+//				System.out.println(u.getName()+" requested");
+//			    }
+//			
+//		}
+		
 		
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+//ZtestThread t = new ZtestThread();
+//synchronized (t) {
+//    t.notify();
+//}	

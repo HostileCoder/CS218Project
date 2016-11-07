@@ -1,5 +1,7 @@
 package CS218Project;
 
+import java.util.ArrayList;
+
 import org.cloudbus.cloudsim.File;
 import org.cloudbus.cloudsim.ParameterException;
 
@@ -9,6 +11,9 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	private double ratio;
 	private double missCost;
 	private int criteria;
+	private double EXOTime = 0.0;
+	private double EXOScore = 0.0;
+	private int accessNum=0;
 	
 	public UE_Context(String fileName, int fileSize) throws ParameterException {
 		super(fileName, fileSize);
@@ -74,24 +79,17 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	}
 
 
-
 	public int getCriteria() {
 		return criteria;
 	}
-
-
 
 	public void setCriteria(int criteria) {
 		this.criteria = criteria;
 	}
 
-
-
 	public double getMissCost() {
 		return missCost;
 	}
-
-
 
 	public void setMissCost(double missCost) {
 		this.missCost = missCost;
@@ -108,6 +106,35 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	
 	public String toString(){
 		return " "+ratio;
+	}
+
+
+	public double getEXOTime() {
+		return EXOTime;
+	}
+
+
+	public double getEXOScore() {
+		return EXOScore;
+	}
+
+	public void setEXOTime(double EXOTime) {
+		this.EXOTime=EXOTime;
+	}
+
+
+	public void setEXOScore(double EXOScore) {
+		this.EXOScore=EXOScore;
+	}
+
+
+	public int getAccessNum() {
+		return accessNum;
+	}
+
+
+	public void incAccessNum() {
+		this.accessNum = accessNum+1;
 	}
 
 }

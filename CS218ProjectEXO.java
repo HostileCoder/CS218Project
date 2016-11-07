@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class CS218Project {
+public class CS218ProjectEXO {
 	private static List<Cloudlet> cloudletList;
 	/** The vmlist. */
 	private static List<Vm> vmlist;
@@ -25,7 +25,7 @@ public class CS218Project {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		Log.printLine("Starting CloudSimExample1...");
+		Log.printLine("Starting CloudSimExample2...");
 
 		try {
 			// First step: Initialize the CloudSim package. It should be called before creating any entities.
@@ -57,10 +57,10 @@ public class CS218Project {
 			// Second step: Create Datacenters
 			// Datacenters are the resource providers in CloudSim. We need at
 			// list one of them to run a CloudSim simulation
-			myDatacenter datacenter0 = createDatacenter("Datacenter_0");
+			myDatacenterEXO datacenter0 = createDatacenter("Datacenter_0");
 
 			// Third step: Create Broker
-			myDatacenterBroker broker = createBroker(0.25);
+			myDatacenterBrokerEXO broker = createBroker(.025);
 			int brokerId = broker.getId();
 
 			// Fourth step: Create one virtual machine
@@ -101,7 +101,7 @@ public class CS218Project {
 //			cloudletList.add(cloudlet);
 			
 			Random oz=new Random(); 
-			int x=500;
+			int x=65000;
 			while(x!=0){
 				UE_Context u=UE.get(oz.nextInt(99));
 				double d = Math.random();
@@ -176,7 +176,7 @@ public class CS218Project {
 	 * @return the datacenter
 	 * @throws ParameterException 
 	 */
-	private static myDatacenter createDatacenter(String name) throws ParameterException {
+	private static myDatacenterEXO createDatacenter(String name) throws ParameterException {
 
 		// Here are the steps needed to create a PowerDatacenter:
 		// 1. We need to create a list to store
@@ -235,9 +235,9 @@ public class CS218Project {
 				costPerStorage, costPerBw);
 
 		// 6. Finally, we need to create a PowerDatacenter object.
-		myDatacenter datacenter = null;
+		myDatacenterEXO datacenter = null;
 		try {
-			datacenter = new myDatacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+			datacenter = new myDatacenterEXO(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -253,10 +253,10 @@ public class CS218Project {
 	 *
 	 * @return the datacenter broker
 	 */
-	private static myDatacenterBroker createBroker(double lambda) {
-		myDatacenterBroker broker = null;
+	private static myDatacenterBrokerEXO createBroker(double lambda) {
+		myDatacenterBrokerEXO broker = null;
 		try {
-			broker = new myDatacenterBroker("Broker", lambda);
+			broker = new myDatacenterBrokerEXO("Broker", lambda);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

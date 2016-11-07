@@ -10,13 +10,13 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.ParameterException;
 import org.cloudbus.cloudsim.core.CloudSim;
 
-public class CacheTest {
+public class ZCacheTest {
 	public static synchronized void main(String[] args) throws ParameterException {
 		CloudSim.init(1, Calendar.getInstance(), false);
 		
 		ArrayList< UE_Context> UE = new ArrayList< UE_Context>();
 		HarddriveStorage Harddrive = new HarddriveStorage("hardd1",5);
-		Ratio ratio = new Ratio(1);
+		Ratio ratio = new Ratio(75);
 		ArrayList <History> records = new 	ArrayList <History>();
 		AHP ahp =new AHP(4);
 		ahp.setWeight(0,1,10);

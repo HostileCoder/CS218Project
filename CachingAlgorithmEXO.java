@@ -12,7 +12,7 @@ import org.cloudbus.cloudsim.Log;
 
 
 
-class CachingAlgorithm implements Runnable{
+class CachingAlgorithmEXO implements Runnable{
 		
 		private HarddriveStorage Harddrive = null;
 		private ArrayList <UE_Context> Evict=new ArrayList <UE_Context>();
@@ -26,31 +26,21 @@ class CachingAlgorithm implements Runnable{
 		private double freespace=0;
 		private double sumWeight=0;
 		private UE_Context file=null;
-		private AHP ahp =new AHP(4);
 		private Ratio ratio=null;
-
+		private double EXOScore =0;
+		private double EXOTime =0;
+		private double preEXOTime=0;
 		
-		public CachingAlgorithm(HarddriveStorage Harddrive, ArrayList <History> records, Ratio ratio){
+		public CachingAlgorithmEXO(HarddriveStorage Harddrive, ArrayList <History> records, Ratio ratio){
 			this.Harddrive=Harddrive;
 			this.records=records;
 			this.ratio=ratio;
-			ahp.setWeight(0,1,10);
-			ahp.setWeight(0,2,10);
-			ahp.setWeight(0,3,10);
-			ahp.setWeight(1,2,ratio.getRatio());
-			ahp.setWeight(1,3,10);
-			ahp.setWeight(2,3,10);
 			history = new History(0,0,0,ratio.getRatio());
 		}
 		
 		@Override
 		public void run() 
 		{
-	
-//			double TotalHit = 0.0;
-//			double NumInsert = 0.0;
-//			double TotalRequest = 0.0;
-				
 			while(true)	
 			{
 
@@ -62,37 +52,23 @@ class CachingAlgorithm implements Runnable{
 				
 				while(!requests.isEmpty())
 				{
-					
-					double r= ratio.getRatio();	
-					Log.printLine("The current ratio is: "+r);
-					
-					setWeights(r);	
-					ahp.findWeight();
-					
-					Log.printLine("Weight Vector is:");
-					Log.printLine(ahp.getResult()[0]+" "+ahp.getResult()[1]+" "+ahp.getResult()[2]+" "+ahp.getResult()[3]);
-					
 					int result= handleRequest();
-					history.incTotalRequest();
-					
-					Log.printLine("return "+result);
-						//TotalRequest++;													
+					history.incTotalRequest();					
+					//Log.printLine("return "+result);
+													
 					if(result==1){
-						history.incTotalHit();
-						//TotalHit++;			
+						history.incTotalHit();	
 					}else if(result==0){
-						history.incNumInsert();
-						//NumInsert++;
-						
+						history.incNumInsert();					
 					}
 					
-					History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),r);
+					History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),ratio.getRatio());
 					rec.setBHR(history.getBHR());
 					rec.setBIR(history.getBIR());					
 					rec.setPreBHR(history.getPreBHR());
 					rec.setPreBIR(history.getPreBIR());
 					records.add(rec);
-					Log.printLine("Cache	"+history);
+					Log.printLine("Cache	"+history.getBHR());
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
@@ -105,22 +81,27 @@ class CachingAlgorithm implements Runnable{
 		
 		
 		public int handleRequest(){
+			double ev=0;
+			
 			file=requests.remove(0);			
 			used=Harddrive.getCurrentSize();
 			capacity=Harddrive.getCapacity();
 			
-			Log.printLine("Used:"+used+" Capacity:"+capacity);
+			//Log.printLine("Used:"+used+" Capacity:"+capacity);
 			
 		
-			updateRatio(file);
+			EXOScore=findEXOWeight(file.getEXOScore(),ratio.getRatio(),ev-file.getEXOTime());
+			file.setWeight(EXOScore);
+			file.setEXOScore(EXOScore);
+			file.setEXOTime(ev);
 		
 			if(CacheState.contains(file)){
-				Log.printLine("Cache:Hit!");
+				//Log.printLine("Cache:Hit!");
 				return 1;
 			}
 			
 			if(file.getSize()+used<=capacity){
-				Log.printLine("Cache:Missed!");
+				//Log.printLine("Cache:Missed!");
 				used=used+file.getSize();
 				insert(file);
 				Harddrive.addFile(file)	;
@@ -136,7 +117,7 @@ class CachingAlgorithm implements Runnable{
 					 sumWeight = sumWeight + x.getWeight();
 					 freespace = freespace + x.getSize();
 					 Evict.add(x);
-					 Log.printLine(x.getName()+" chosen for eviction");
+					 //Log.printLine(x.getName()+" chosen for eviction");
 					 if(freespace>=file.getSize()){
 						 break;
 					 }						
@@ -168,22 +149,7 @@ class CachingAlgorithm implements Runnable{
 			return 0;
 		}
 		
-		
-		public void updateRatio(UE_Context file){
-			double [] d=ahp.getResult();
-			if(file.getCriteria()==0){
-				file.setProbility(d[0]);
-			}else if(file.getCriteria()==1){
-				file.setProbility(d[1]);
-			}else if(file.getCriteria()==2){
-				file.setProbility(d[2]);
-			}else if(file.getCriteria()==3){
-				file.setProbility(d[3]);
-			}
-			Collections.sort(CacheState);
-		}
 
-	
 		public void addrequest(File file){
 			 requests.add((UE_Context) file);
 		}
@@ -208,14 +174,9 @@ class CachingAlgorithm implements Runnable{
 			return CacheState;
 		}
 
-
-		public void setWeights(double r){
-			ahp.setWeight(0,1,10);
-			ahp.setWeight(0,2,10);
-			ahp.setWeight(0,3,10);
-			ahp.setWeight(1,2,r);
-			ahp.setWeight(1,3,10);
-			ahp.setWeight(2,3,10);
+		
+		public double findEXOWeight(double weight,double a, double time){
+			return weight*Math.pow(Math.E, -a*time);
 		}
 		 
 }

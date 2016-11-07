@@ -11,11 +11,11 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.lists.VmList;
 
-public class myDatacenterBroker extends DatacenterBroker {
+public class myDatacenterBrokerEXO extends DatacenterBroker {
 	private Distribution distr = new Distribution(.025,1);
 	private double lambda;
 	
-	public myDatacenterBroker(String name, double lambda) throws Exception {
+	public myDatacenterBrokerEXO(String name, double lambda) throws Exception {
 		super(name);	
 		this.lambda=lambda;
 	}

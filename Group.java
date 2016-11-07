@@ -13,10 +13,10 @@ public class Group {
 
 	
 	private double rep=0.0;
-	private String name="";
+	private double name=0.0;
 	private Map<Double,valueSet> valueSetList = new  TreeMap<Double,valueSet>();
 	
-	public Group(String name){
+	public Group(double name){
 		this.setName(name);
 		//findRep();
 	}
@@ -42,6 +42,9 @@ public class Group {
 	
 	
 	public double findRep(){
+		if(valueSetList.isEmpty()){
+			return rep=0;
+		}
 		double sum=0.0;
 		for(valueSet e: valueSetList.values() ){
 			sum=sum+e.getValueBHR();
@@ -55,10 +58,11 @@ public class Group {
 	public double getRep() {
 		return rep;
 	}
-
+	
 	public void setRep(double rep) {
 		this.rep=rep;
 	}
+
 
 	public valueSet getSmallestBIR() {
 		return smallestBIR;
@@ -75,12 +79,12 @@ public class Group {
 	}
 
 
-	public String getName() {
+	public double getName() {
 		return name;
 	}
 
 
-	public void setName(String name) {
+	public void setName(double name) {
 		this.name = name;
 	}
 	
