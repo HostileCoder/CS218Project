@@ -120,8 +120,7 @@ public class CS218ProjectEXO {
 				x--;
 			}
 			
-			
-					
+								
 			// submit cloudlet list to the broker
 			broker.submitCloudletList(cloudletList);
 
