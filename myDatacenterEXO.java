@@ -127,9 +127,8 @@ public class myDatacenterEXO extends Datacenter{
 		records.add(rec);
 		System.out.println(history+" "+ratio.getRatio());
 		 
-
-		//writedata(history);
-		writedataWriter(history);
+		outputWriter.write(time+"	"+history.getBHR()+"\n");
+		
 		//adopt();
 		
 	}
@@ -317,21 +316,17 @@ public class myDatacenterEXO extends Datacenter{
 	}
 	
 	
-	public void writedata(History h){
-		 Row row = Sheet.createRow(rowIndex++);
-		 int cellIndex = 0;
-		 row.createCell(cellIndex++).setCellValue(h.getTotalRequest());
-		 row.createCell(cellIndex++).setCellValue(h.getBHR());
-		 try {
-			workbook.write(output);	
-		 }catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	}
+//	public void writedata(History h){
+//		 Row row = Sheet.createRow(rowIndex++);
+//		 int cellIndex = 0;
+//		 row.createCell(cellIndex++).setCellValue(h.getTotalRequest());
+//		 row.createCell(cellIndex++).setCellValue(h.getBHR());
+//		 try {
+//			workbook.write(output);	
+//		 }catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}	
+//	}
 	
-	
-	public void writedataWriter(History h){
-		outputWriter.write(h.getBHR()+"\n");
-	}
 }

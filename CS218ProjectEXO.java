@@ -20,7 +20,7 @@ public class CS218ProjectEXO {
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=1000;
     private static int sizeHD=200;
-    private static double lambda=10;
+    private static double lambda=0.05;
     private static int sizeReq=4000;
 	/**
 	 * Creates main() to run this example.
