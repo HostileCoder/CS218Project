@@ -22,7 +22,7 @@ public class Distribution {
 	public void fillList(){
 		list.clear();
 		for(int i=0;i<num;i++){
-			double x=Math.round(nextTime(lambda));
+			double x=Math.round(nextTime());
 			list.add(x);
 		}		
 	}
@@ -67,7 +67,7 @@ public class Distribution {
 	}
 	
 	
-	public double nextTime(double lambda){
+	public double nextTime(){
 		double u = - Math.log(Math.random());
 		u = u/lambda;
 		return u;

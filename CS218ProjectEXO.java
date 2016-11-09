@@ -18,6 +18,10 @@ public class CS218ProjectEXO {
 	/** The vmlist. */
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
+    private static int sizeUE=1000;
+    private static int sizeHD=200;
+    private static double lambda=10;
+    private static int sizeReq=4000;
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -60,7 +64,7 @@ public class CS218ProjectEXO {
 			myDatacenterEXO datacenter0 = createDatacenter("Datacenter_0");
 
 			// Third step: Create Broker
-			myDatacenterBrokerEXO broker = createBroker(.025);
+			myDatacenterBrokerEXO broker = createBroker(lambda);
 			int brokerId = broker.getId();
 
 			// Fourth step: Create one virtual machine
@@ -100,18 +104,35 @@ public class CS218ProjectEXO {
 //			// add the cloudlet to the list
 //			cloudletList.add(cloudlet);
 			
-			Random oz=new Random(); 
-			int x=65000;
-			while(x!=0){
-				UE_Context u=UE.get(oz.nextInt(99));
-				double d = Math.random();
+			
+			
+			ArrayList<UE_Context> m = new ArrayList<UE_Context>();
+			ArrayList<UE_Context> s = new ArrayList<UE_Context>();
+			for(UE_Context u:UE){
 				int c = u.getCriteria();
-				if(c<2 && d <.8){
+				if(c<2){
+					m.add(u);
+				}else{
+					s.add(u);
+				}
+			}
+			
+			
+			Random oz=new Random(); 
+			int x=sizeReq;
+			
+			
+			while(x!=0){
+				
+				double d = Math.random();
+				if(d > 0.2){
+					UE_Context u=UE.get(oz.nextInt(m.size()-1));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-				}else if(c>=2 && d <.2){
+				}else{
+					UE_Context u=UE.get(oz.nextInt(s.size()-1));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
@@ -119,6 +140,26 @@ public class CS218ProjectEXO {
 				}
 				x--;
 			}
+			
+			
+					
+//			while(x!=0){
+//				UE_Context u=UE.get(oz.nextInt(sizeUE-1));
+//				double d = Math.random();
+//				int c = u.getCriteria();
+//				if(c<2 && d <=.8){
+//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+//					cloudlet.setUserId(brokerId);
+//					cloudlet.setVmId(vmid);
+//					cloudletList.add(cloudlet);
+//				}else if(c>=2 && d <=.2){
+//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+//					cloudlet.setUserId(brokerId);
+//					cloudlet.setVmId(vmid);
+//					cloudletList.add(cloudlet);
+//				}
+//				x--;
+//			}
 			
 								
 			// submit cloudlet list to the broker
@@ -150,16 +191,18 @@ public class CS218ProjectEXO {
 	private static ArrayList<UE_Context> fillhardrive(HarddriveStorage Harddrive) throws ParameterException{
 		Random rn = new Random();
 		Random oz=new Random(); 
-		for(int i=0;i<100;i++){
+		
+		for(int i=0;i<sizeUE;i++){
 			int max=3;
 			int min=0;
 			int ran= rn.nextInt(max - min + 1) + min;
-			UE.add(new UE_Context(Integer.toString(i),1,0.5,5,ran));
+			UE_Context u =new UE_Context(Integer.toString(i),1,0.0,1,ran);
+			UE.add(u);
 			
 			oz=new Random(); 
 			int x=oz.nextInt(1); 
 			if(x==1){
-				Harddrive.addFile(new UE_Context(Integer.toString(i),1,0.5,5,ran));
+				Harddrive.addFile(u);
 			}
 		}
 		return UE;
@@ -225,7 +268,7 @@ public class CS218ProjectEXO {
 		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
 													// devices by now
 	
-		HarddriveStorage hd =  new HarddriveStorage("HD0",30);
+		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeHD);
 		storageList.add(hd);
 		fillhardrive(hd);
 		

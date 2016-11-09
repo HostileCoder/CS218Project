@@ -1,12 +1,19 @@
 package CS218Project;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.cloudbus.cloudsim.Cloudlet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.HarddriveStorage;
@@ -40,20 +47,21 @@ public class myDatacenterEXO extends Datacenter{
 	private double freespace=0;
 	private double sumWeight=0;
 	private UE_Context file=null;
-	private Ratio ratio=new Ratio(Math.pow(10, -2));
+	private Ratio ratio=new Ratio(Math.pow(30, -2));
 	private History history = new History(0,0,0,ratio.getRatio());
 	private Thread t=null;
 	
+	private int rowIndex=0;
+	private HSSFWorkbook workbook = new HSSFWorkbook();
+	private Sheet Sheet = workbook.createSheet("Cache");
+	private FileOutputStream output = new FileOutputStream("output.xls");
+	private PrintWriter outputWriter = new PrintWriter ("file.txt");
 	
 	public myDatacenterEXO(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		// TODO Auto-generated constructor stub	
 		Harddrive=(HarddriveStorage) storageList.get(0);	
-		
-//		AdaptorAlgorithmEXO adopt = new AdaptorAlgorithmEXO(10, records, ratio);		
-//		t = new Thread(adopt);
-//		t.start();		
 		Log.disable();
 		
 		
@@ -69,11 +77,9 @@ public class myDatacenterEXO extends Datacenter{
 		}
 
 		double a=0.0;
-		for(int i=0;i<6;i++){
-			valueSet v=new valueSet(Math.pow(10, -2*i));
-			candidateValue.put( Math.pow(10, -2*i), v );			
-//			a=0.5+a;
-//			a=Math.round(a*10.0)/10.0;
+		for(int i=1;i<=6;i++){
+			valueSet v=new valueSet(Math.pow(10, -i*2));
+			candidateValue.put(Math.pow(10, -i*2), v );			
 			group(v);
 		}
 		
@@ -86,8 +92,10 @@ public class myDatacenterEXO extends Datacenter{
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
 		double time = ev.eventTime();
 		
+		
 		myCloudlet cl = (myCloudlet) ev.getData();
 		file = cl.getUE();
+		
 		
 		int result= handleRequest(time);
 		history.incTotalRequest();
@@ -117,8 +125,12 @@ public class myDatacenterEXO extends Datacenter{
 		rec.setPreBHR(history.getPreBHR());
 		rec.setPreBIR(history.getPreBIR());
 		records.add(rec);
-		//System.out.println(history+" "+ratio.getRatio());
-		adopt();
+		System.out.println(history+" "+ratio.getRatio());
+		 
+
+		//writedata(history);
+		writedataWriter(history);
+		//adopt();
 		
 	}
 	
@@ -132,10 +144,9 @@ public class myDatacenterEXO extends Datacenter{
 		Log.printLine("time      "+time+"       "+ (time-file.getEXOTime()));
 		
 		double EXOScore=findEXOWeight(file.getEXOScore(),ratio.getRatio(),time,file.getEXOTime());
-		file.setProbility(EXOScore);
-		if(file.getEXOScore()==0)
-			file.setEXOScore(EXOScore);
-		file.setEXOTime(time);
+		
+		
+		//System.out.println( EXOScore);
 	
 		if(CacheState.contains(file)){
 			return 1;
@@ -213,7 +224,7 @@ public class myDatacenterEXO extends Datacenter{
 				if(g.getValueSetList().containsKey(x.getValueRatio())){
 					valueSet v = g.getValueSetList().remove(x.getValueRatio());
 					g.findRep();
-					System.out.println("Adopt	:"+v.getValueRatio()+" remove from "+g.getName());	
+					//System.out.println("Adopt	:"+v.getValueRatio()+" remove from "+g.getName());	
 				}
 			}			
 			group(x);	
@@ -249,21 +260,31 @@ public class myDatacenterEXO extends Datacenter{
 					
 			ratio.setRatio(newRatio);	
 			}
+	
 	}
 	
 	
 	
 	
-	public double findEXOWeight(double weight,double a, double timeNow, double lastAccess){
-		file.incAccessNum();
-		double time = timeNow-lastAccess;		
-		if(weight==0){
+	public double findEXOWeight(double firtScore,double a, double timeNow, double firstAccess){
+		double time = timeNow-firstAccess;	
+		//System.out.println(time);
+		for(UE_Context u: CacheState){
+			if(!u.equals(file)){
+				u.setProbility(u.getEXOScore()*Math.pow(Math.E, -a*(timeNow-u.getEXOTime()))); 
+				//System.out.println(u.getProbility());
+			}
+		}
+		file.incAccessNum();	
+		
+		if(file.getAccessNum()==1){			
+			file.setEXOScore(1);
+			file.setEXOTime(timeNow);		
 			return Math.pow(Math.E, -a*time);
 		}
-		if(file.getAccessNum()==2){
-			return weight*Math.pow(Math.E, -a*time)+1;
-		}
-		return weight*Math.pow(Math.E, -a*time);
+		//System.out.println(firtScore*Math.pow(Math.E, -a*time)+1);
+		file.setProbility(firtScore*Math.pow(Math.E, -a*time)+1);
+		return firtScore*Math.pow(Math.E, -a*time)+1;
 	}
 	
 	private void insert(UE_Context f){
@@ -292,7 +313,25 @@ public class myDatacenterEXO extends Datacenter{
 				Log.printLine("insert at group "+g.getName());
 				return;
 			}
-		}
-		
+		}		
+	}
+	
+	
+	public void writedata(History h){
+		 Row row = Sheet.createRow(rowIndex++);
+		 int cellIndex = 0;
+		 row.createCell(cellIndex++).setCellValue(h.getTotalRequest());
+		 row.createCell(cellIndex++).setCellValue(h.getBHR());
+		 try {
+			workbook.write(output);	
+		 }catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
+	
+	public void writedataWriter(History h){
+		outputWriter.write(h.getBHR()+"\n");
 	}
 }

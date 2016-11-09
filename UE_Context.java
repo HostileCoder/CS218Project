@@ -6,10 +6,10 @@ import org.cloudbus.cloudsim.File;
 import org.cloudbus.cloudsim.ParameterException;
 
 public class UE_Context extends File implements Comparable<UE_Context>{
-	private double probility;
-	private double weight;
-	private double ratio;
-	private double missCost;
+	private double probility=0.0;
+	private double weight=0.0;
+	private double ratio=0.0;
+	private double missCost=0.0;
 	private int criteria;
 	private double EXOTime = 0.0;
 	private double EXOScore = 0.0;
@@ -43,13 +43,13 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	}
 	
 		
-	public double findweight(){
-		return getMissCost()* getProbility();
-	}
-	
-	public double findratio(){
-		return findweight()/getSize();
-	}
+//	public double findweight(){
+//		return getMissCost()* getProbility();
+//	}
+//	
+//	public double findratio(){
+//		return findweight()/getSize();
+//	}
 	
 
 	public double getRatio() {

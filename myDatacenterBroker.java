@@ -12,12 +12,12 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.lists.VmList;
 
 public class myDatacenterBroker extends DatacenterBroker {
-	private Distribution distr = new Distribution(.025,1);
-	private double lambda;
+	private Distribution distr = null;
+
 	
 	public myDatacenterBroker(String name, double lambda) throws Exception {
 		super(name);	
-		this.lambda=lambda;
+		distr = new Distribution(lambda,1);
 	}
 	
 	
@@ -50,7 +50,7 @@ public class myDatacenterBroker extends DatacenterBroker {
 			}
 			
 			cloudlet.setVmId(vm.getId());
-			send(getVmsToDatacentersMap().get(vm.getId()), distr.nextTime(lambda), CloudSimTags.CLOUDLET_SUBMIT, myCloudlet);
+			send(getVmsToDatacentersMap().get(vm.getId()), distr.nextTime(), CloudSimTags.CLOUDLET_SUBMIT, myCloudlet);
 			cloudletsSubmitted++;
 			vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
 			getCloudletSubmittedList().add(cloudlet);
