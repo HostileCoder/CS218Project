@@ -20,8 +20,8 @@ public class CS218ProjectEXO {
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=1000;
     private static int sizeHD=200;
-    private static double lambda=0.05;
-    private static int sizeReq=4000;
+    private static double lambda=10;
+    private static int sizeReq=20000;
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -144,20 +144,11 @@ public class CS218ProjectEXO {
 			
 					
 //			while(x!=0){
-//				UE_Context u=UE.get(oz.nextInt(sizeUE-1));
-//				double d = Math.random();
-//				int c = u.getCriteria();
-//				if(c<2 && d <=.8){
-//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-//					cloudlet.setUserId(brokerId);
-//					cloudlet.setVmId(vmid);
-//					cloudletList.add(cloudlet);
-//				}else if(c>=2 && d <=.2){
-//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-//					cloudlet.setUserId(brokerId);
-//					cloudlet.setVmId(vmid);
-//					cloudletList.add(cloudlet);
-//				}
+//				UE_Context u=UE.get(oz.nextInt(UE.size()-1));			
+//				myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+//				cloudlet.setUserId(brokerId);
+//				cloudlet.setVmId(vmid);
+//				cloudletList.add(cloudlet);	
 //				x--;
 //			}
 			
@@ -205,6 +196,15 @@ public class CS218ProjectEXO {
 				Harddrive.addFile(u);
 			}
 		}
+		
+//		for(int i=0;i<400;i++){
+//			UE.get(i).setCriteria(0);
+//		}
+//		
+//		for(int i=400;i<1000;i++){
+//			UE.get(i).setCriteria(3);
+//		}
+		
 		return UE;
 	}
 	

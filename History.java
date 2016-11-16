@@ -10,6 +10,16 @@ public class History {
 	private double preBHR=0.0;
 	private double preBIR=0.0;
 	
+	public  double HP=0;
+	public  double LP=0;
+	public  double HB=0;
+	public  double LB=0;
+	
+	public  double HPH=0;
+	public  double LPH=0;
+	public  double HBH=0;
+	public  double LBH=0;
+	
 	public History(double totalHit ,double numInsert,double totalRequest,double varRatio){
 		this.totalHit=totalHit;
 		this.totalRequest=totalRequest;
@@ -102,6 +112,7 @@ public class History {
 	public double getTotalRequest() {
 		return totalRequest;
 	}
+	
 	public void incTotalRequest() {
 		totalRequest = totalRequest+1;
 		setPreBHR(BHR);
@@ -109,4 +120,26 @@ public class History {
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
+	
+	public void incCriteria(int c,int r){
+		if(c==0){
+			HP++;
+			if(r==1)
+				HPH++;
+		}else if(c==1){
+			LP++;
+			if(r==1)
+				LPH++;
+		}else if(c==2){
+			HB++;
+			if(r==1)
+				HBH++;
+		}else if(c==3){
+			LB++;
+			if(r==1)
+				LBH++;
+		}
+	}
+	
+	
 }

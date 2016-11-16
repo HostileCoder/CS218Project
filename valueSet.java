@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 public class valueSet {
 	private double ratio;
-	private double BHR=Math.random();
-	private double BIR=Math.random();
+	private double BHR=0;
+	private double BIR=0;
 	
 	valueSet(double ratio){
 		this.ratio=ratio;
