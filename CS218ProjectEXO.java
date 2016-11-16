@@ -98,14 +98,7 @@ public class CS218ProjectEXO {
 			long outputSize = 300;
 			UtilizationModel utilizationModel = new UtilizationModelFull();
 
-//			Cloudlet cloudlet =  new Cloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel);
-//			cloudlet.setUserId(brokerId);
-//			cloudlet.setVmId(vmid);
-//			// add the cloudlet to the list
-//			cloudletList.add(cloudlet);
-			
-			
-			
+		
 			ArrayList<UE_Context> m = new ArrayList<UE_Context>();
 			ArrayList<UE_Context> s = new ArrayList<UE_Context>();
 			for(UE_Context u:UE){
@@ -122,8 +115,7 @@ public class CS218ProjectEXO {
 			int x=sizeReq;
 			
 			
-			while(x!=0){
-				
+			while(x!=0){				
 				double d = Math.random();
 				if(d > 0.2){
 					UE_Context u=UE.get(oz.nextInt(m.size()-1));
@@ -140,17 +132,6 @@ public class CS218ProjectEXO {
 				}
 				x--;
 			}
-			
-			
-					
-//			while(x!=0){
-//				UE_Context u=UE.get(oz.nextInt(UE.size()-1));			
-//				myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-//				cloudlet.setUserId(brokerId);
-//				cloudlet.setVmId(vmid);
-//				cloudletList.add(cloudlet);	
-//				x--;
-//			}
 			
 								
 			// submit cloudlet list to the broker
@@ -174,9 +155,7 @@ public class CS218ProjectEXO {
 	
 	
 	//-------------------------------------------------------
-	
-	
-	
+		
 	
 	@SuppressWarnings("unused")
 	private static ArrayList<UE_Context> fillhardrive(HarddriveStorage Harddrive) throws ParameterException{

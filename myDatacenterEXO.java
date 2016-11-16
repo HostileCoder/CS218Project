@@ -109,7 +109,7 @@ public class myDatacenterEXO extends Datacenter{
 		}else if(result==-1){
 			//System.out.println("Cache:Missed!, No insertion");
 		}else if(result==-2){
-			System.out.println("Cache:Missed!, with eviction and insertion"+" "+evicted);
+			//System.out.println("Cache:Missed!, with eviction and insertion"+" "+evicted);
 		}
 		
 		

@@ -30,8 +30,8 @@ public class ZT {
 //			a=a/100.0;
 //			System.out.println(a);
 //		}
-//		
-//		Random rn = new Random();
+		
+		Random rn = new Random();
 //		for(int i=0;i<122;i++){
 //			int max=3;
 //			int min=0;
@@ -39,21 +39,26 @@ public class ZT {
 //			System.out.println(ran);
 //		}
 		
+		System.out.println(rn.nextInt(2));
+		System.out.println(rn.nextInt(2));
+		System.out.println(rn.nextInt(2));
+		
+//		ArrayList<UE_Context> v=  new 	ArrayList<UE_Context>();
+//		v.add(new UE_Context(Integer.toString(1),1,0.0,1,1));
+//		v.add(new UE_Context(Integer.toString(2),2,0.0,1,1));
+//		v.add(new UE_Context(Integer.toString(3),3,0.0,1,1));
+//		
+//		
+//		v.get(0).setRatio(5);
+//		v.get(1).setRatio(2);
+//		v.get(2).setRatio(3);
+//		Collections.sort(v);
+//		
+//		for(UE_Context u:v)
+//			System.out.println(u.getName());
 		
 		
-		ArrayList<UE_Context> v=  new 	ArrayList<UE_Context>();
-		v.add(new UE_Context(Integer.toString(1),1,0.0,1,1));
-		v.add(new UE_Context(Integer.toString(2),2,0.0,1,1));
-		v.add(new UE_Context(Integer.toString(3),3,0.0,1,1));
-		
-		
-		v.get(0).setRatio(5);
-		v.get(1).setRatio(2);
-		v.get(2).setRatio(3);
-		Collections.sort(v);
-		
-		for(UE_Context u:v)
-			System.out.println(u.getName());
+	
 			
 	}
 
