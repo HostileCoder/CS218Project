@@ -1,6 +1,8 @@
 package CS218Project;
 
 public class History {
+	private double totalMiss=0.0;
+	private double BMR=0.0;
 	private double totalHit=0.0;
 	private double numInsert=0.0;
 	private double totalRequest=0.0;
@@ -90,9 +92,18 @@ public class History {
 	}
 	
 	public String toString(){
-		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio+" BHR: "+ BHR+" BIR: "+ BIR;	
+		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio+" BHR: "+ BHR+" BIR: "+ BIR+" BMR: "+ BMR;	
 	}
 	
+	
+	public void incTotalMiss() {
+		totalMiss++;
+		BMR=totalMiss/totalRequest;
+	}
+	
+	public double getTotalMiss() {
+		return totalMiss;
+	}
 	
 	public void incTotalHit() {
 		totalHit = totalHit+1;

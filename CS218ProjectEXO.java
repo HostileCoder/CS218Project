@@ -30,7 +30,7 @@ public class CS218ProjectEXO {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Log.printLine("Starting CloudSimExample2...");
-
+		Log.disable();
 		try {
 			// First step: Initialize the CloudSim package. It should be called before creating any entities.
 			int num_user = 1; // number of cloud users
@@ -80,7 +80,7 @@ public class CS218ProjectEXO {
 			String vmm = "Xen"; // VMM name
 
 			// create VM
-			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
 
 			// add the VM to the vmList
 			vmlist.add(vm);
@@ -93,9 +93,9 @@ public class CS218ProjectEXO {
 
 			// Cloudlet properties
 			int id = 0;
-			long length = 400000;
-			long fileSize = 300;
-			long outputSize = 300;
+			long length = 0;
+			long fileSize = 0;
+			long outputSize = 0;
 			UtilizationModel utilizationModel = new UtilizationModelFull();
 
 		
@@ -118,19 +118,20 @@ public class CS218ProjectEXO {
 			while(x!=0){				
 				double d = Math.random();
 				if(d > 0.2){
-					UE_Context u=UE.get(oz.nextInt(m.size()-1));
+					UE_Context u=UE.get(oz.nextInt(m.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 				}else{
-					UE_Context u=UE.get(oz.nextInt(s.size()-1));
+					UE_Context u=UE.get(oz.nextInt(s.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 				}
 				x--;
+				id++;
 			}
 			
 								

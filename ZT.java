@@ -14,12 +14,12 @@ public class ZT {
 		// TODO Auto-generated method stub
 		CloudSim.init(1, Calendar.getInstance(), false);
 		AHP ahp=new AHP(4);
-		ahp.setWeight(0,1,10);
-		ahp.setWeight(0,2,10);
-		ahp.setWeight(0,3,10);
-		ahp.setWeight(1,2,10);
+		ahp.setWeight(0,1,5);
+		ahp.setWeight(0,2,5);
+		ahp.setWeight(0,3,5);
+		ahp.setWeight(1,2,5);
 		ahp.setWeight(1,3,10);
-		ahp.setWeight(2,3,10);
+		ahp.setWeight(2,3,20);
 		ahp.findWeight();
 		System.out.println(ahp.getResult()[0]+" "+ahp.getResult()[1]+" "+ahp.getResult()[2]+" "+ahp.getResult()[3]);
 		

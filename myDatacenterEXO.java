@@ -9,14 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
-
+import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.HarddriveStorage;
+import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 
 public class myDatacenterEXO extends Datacenter{
@@ -43,7 +46,7 @@ public class myDatacenterEXO extends Datacenter{
 	private double freespace=0;
 	private double sumWeight=0;
 	private UE_Context file=null;
-	private Ratio ratio=new Ratio(.1);
+	private Ratio ratio=new Ratio(Math.pow(10, -12));
 	private History history = new History(0,0,0,ratio.getRatio());
 
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
@@ -52,7 +55,7 @@ public class myDatacenterEXO extends Datacenter{
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		// TODO Auto-generated constructor stub	
 		Harddrive=(HarddriveStorage) storageList.get(0);	
-		Log.disable();
+
 		
 		
 		//---------------------------------------------adopt		
@@ -79,10 +82,10 @@ public class myDatacenterEXO extends Datacenter{
 		
 		//---------------------------------------------
 		
-		ahp.setWeight(0,1,10);
-		ahp.setWeight(0,2,10);
-		ahp.setWeight(0,3,10);
-		ahp.setWeight(1,2,10);
+		ahp.setWeight(0,1,5);
+		ahp.setWeight(0,2,5);
+		ahp.setWeight(0,3,5);
+		ahp.setWeight(1,2,.3);
 		ahp.setWeight(1,3,10);
 		ahp.setWeight(2,3,10);
 		ahp.findWeight();
@@ -95,8 +98,11 @@ public class myDatacenterEXO extends Datacenter{
 		double time = ev.eventTime();
 			
 		myCloudlet cl = (myCloudlet) ev.getData();
-		file = cl.getUE();
-				
+		
+		//time=cl.getSubmissionTime();
+		//System.out.println(time);
+		
+		file = cl.getUE();			
 		int result= handleRequest(time);
 		history.incTotalRequest();
 		
@@ -115,9 +121,13 @@ public class myDatacenterEXO extends Datacenter{
 		
 		if(result==1){
 			history.incTotalHit();		
-		}else if(result==0||result==-2){        //----------------------------------------------------------------------------------------
-		//}else if(result==-2){	
-			history.incNumInsert();		
+		}
+		if(result==0||result==-2){       
+			history.incNumInsert();	
+			history.incTotalMiss();
+		}
+		if(result==-1){    
+			history.incTotalMiss();
 		}
 		
 		History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),ratio.getRatio());
@@ -126,16 +136,44 @@ public class myDatacenterEXO extends Datacenter{
 		rec.setPreBHR(history.getPreBHR());
 		rec.setPreBIR(history.getPreBIR());
 		records.add(rec);
-		System.out.println(history+" 	Ratio:"+ratio.getRatio()+
+		System.out.println(time+" "+history+" 	Ratio:"+ratio.getRatio()+
+				" 	HP:"+history.HPH/history.HP+
 				" 	LP:"+history.LPH/history.LP+
 				" 	HB:"+history.HBH/history.HB+
-				" 	HP:"+history.HPH/history.HP+
 				" 	LB:"+history.LBH/history.LB
 				);	 
 		
 
-		outputWriter.write(time+" "+history.getTotalRequest()+"	BHR:"+history.getBHR()+"  BIR:"+history.getBIR()+" 	Ratio:"+ratio.getRatio()+"\n");	
+		outputWriter.write(time+" "+history.getTotalRequest()+"	BHR:"+history.getBHR()+"  BIR:"+history.getBIR()+
+				" 	"+history.HPH/history.HP+
+				" 	"+history.LPH/history.LP+
+				" 	"+history.HBH/history.HB+
+				" 	"+history.LBH/history.LB+
+				"\n");	
 
+		
+		cl.setResourceParameter(
+                getId(), getCharacteristics().getCostPerSecond(), 
+                getCharacteristics().getCostPerBw());
+
+		int userId = cl.getUserId();
+		int vmId = cl.getVmId();
+
+		// time to transfer the files
+		double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
+
+		Host host = getVmAllocationPolicy().getHost(vmId, userId);
+		Vm vm = host.getVm(vmId, userId);
+		CloudletScheduler scheduler = vm.getCloudletScheduler();
+		double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
+
+		// if this cloudlet is in the exec queue
+		if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
+			estimatedFinishTime += fileTransferTime;
+			send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
+		}
+		
+		
 		//adopt();
 		
 	}
@@ -278,11 +316,11 @@ public class myDatacenterEXO extends Datacenter{
 			file.setProbility(1);
 		}
 																				
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
 					
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
 			
 		file.setEXOTime(timeNow);	
 	}

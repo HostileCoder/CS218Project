@@ -1,23 +1,39 @@
 package CS218Project;
-import org.cloudbus.cloudsim.*;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerSpaceShared;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
+/**
+ * A simple example showing how to create a data center with one host and run one cloudlet on it.
+ */
 public class CS218Project {
+	/** The cloudlet list. */
 	private static List<Cloudlet> cloudletList;
 	/** The vmlist. */
 	private static List<Vm> vmlist;
-    private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
+
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -57,10 +73,10 @@ public class CS218Project {
 			// Second step: Create Datacenters
 			// Datacenters are the resource providers in CloudSim. We need at
 			// list one of them to run a CloudSim simulation
-			myDatacenter datacenter0 = createDatacenter("Datacenter_0");
+			Datacenter datacenter0 = createDatacenter("Datacenter_0");
 
 			// Third step: Create Broker
-			myDatacenterBroker broker = createBroker(0.25);
+			DatacenterBroker broker = createBroker();
 			int brokerId = broker.getId();
 
 			// Fourth step: Create one virtual machine
@@ -76,7 +92,7 @@ public class CS218Project {
 			String vmm = "Xen"; // VMM name
 
 			// create VM
-			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
 
 			// add the VM to the vmList
 			vmlist.add(vm);
@@ -94,34 +110,27 @@ public class CS218Project {
 			long outputSize = 300;
 			UtilizationModel utilizationModel = new UtilizationModelFull();
 
-//			Cloudlet cloudlet =  new Cloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel);
-//			cloudlet.setUserId(brokerId);
-//			cloudlet.setVmId(vmid);
-//			// add the cloudlet to the list
-//			cloudletList.add(cloudlet);
-			
-			Random oz=new Random(); 
-			int x=500;
-			while(x!=0){
-				UE_Context u=UE.get(oz.nextInt(99));
-				double d = Math.random();
-				int c = u.getCriteria();
-				if(c<2 && d <.8){
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);
-				}else if(c>=2 && d <.2){
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);
-				}
-				x--;
-			}
+			Cloudlet cloudlet = 
+                                new Cloudlet(id, length, pesNumber, fileSize, 
+                                        outputSize, utilizationModel, utilizationModel, 
+                                        utilizationModel);
+			cloudlet.setUserId(brokerId);
+			cloudlet.setVmId(vmid);
+
+			// add the cloudlet to the list
+			cloudletList.add(cloudlet);
 			
 			
-					
+			Cloudlet cloudlet1 = 
+                    new Cloudlet(id+1, length, pesNumber, fileSize, 
+                            outputSize, utilizationModel, utilizationModel, 
+                            utilizationModel);
+			cloudlet1.setUserId(brokerId);
+			cloudlet1.setVmId(vmid);
+
+			// add the cloudlet to the list
+			cloudletList.add(cloudlet1);
+
 			// submit cloudlet list to the broker
 			broker.submitCloudletList(cloudletList);
 
@@ -140,33 +149,6 @@ public class CS218Project {
 			Log.printLine("Unwanted errors happen");
 		}
 	}
-	
-	
-	//-------------------------------------------------------
-	
-	
-	
-	
-	@SuppressWarnings("unused")
-	private static ArrayList<UE_Context> fillhardrive(HarddriveStorage Harddrive) throws ParameterException{
-		Random rn = new Random();
-		Random oz=new Random(); 
-		for(int i=0;i<100;i++){
-			int max=3;
-			int min=0;
-			int ran= rn.nextInt(max - min + 1) + min;
-			UE.add(new UE_Context(Integer.toString(i),1,0.5,5,ran));
-			
-			oz=new Random(); 
-			int x=oz.nextInt(1); 
-			if(x==1){
-				Harddrive.addFile(new UE_Context(Integer.toString(i),1,0.5,5,ran));
-			}
-		}
-		return UE;
-	}
-	
-	
 
 	/**
 	 * Creates the datacenter.
@@ -174,9 +156,8 @@ public class CS218Project {
 	 * @param name the name
 	 *
 	 * @return the datacenter
-	 * @throws ParameterException 
 	 */
-	private static myDatacenter createDatacenter(String name) throws ParameterException {
+	private static Datacenter createDatacenter(String name) {
 
 		// Here are the steps needed to create a PowerDatacenter:
 		// 1. We need to create a list to store
@@ -225,19 +206,15 @@ public class CS218Project {
 		double costPerBw = 0.0; // the cost of using bw in this resource
 		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
 													// devices by now
-	
-		HarddriveStorage hd =  new HarddriveStorage("HD0",30);
-		storageList.add(hd);
-		fillhardrive(hd);
-		
+
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
 				costPerStorage, costPerBw);
 
 		// 6. Finally, we need to create a PowerDatacenter object.
-		myDatacenter datacenter = null;
+		Datacenter datacenter = null;
 		try {
-			datacenter = new myDatacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -253,10 +230,10 @@ public class CS218Project {
 	 *
 	 * @return the datacenter broker
 	 */
-	private static myDatacenterBroker createBroker(double lambda) {
-		myDatacenterBroker broker = null;
+	private static DatacenterBroker createBroker() {
+		DatacenterBroker broker = null;
 		try {
-			broker = new myDatacenterBroker("Broker", lambda);
+			broker = new DatacenterBroker("Broker");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -298,5 +275,4 @@ public class CS218Project {
 			}
 		}
 	}
-		
 }
