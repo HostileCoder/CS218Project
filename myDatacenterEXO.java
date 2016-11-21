@@ -46,7 +46,7 @@ public class myDatacenterEXO extends Datacenter{
 	private double freespace=0;
 	private double sumWeight=0;
 	private UE_Context file=null;
-	private Ratio ratio=new Ratio(Math.pow(10, -12));
+	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
 
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
@@ -85,7 +85,7 @@ public class myDatacenterEXO extends Datacenter{
 		ahp.setWeight(0,1,5);
 		ahp.setWeight(0,2,5);
 		ahp.setWeight(0,3,5);
-		ahp.setWeight(1,2,.3);
+		ahp.setWeight(1,2,5);
 		ahp.setWeight(1,3,10);
 		ahp.setWeight(2,3,10);
 		ahp.findWeight();
@@ -316,12 +316,13 @@ public class myDatacenterEXO extends Datacenter{
 			file.setProbility(1);
 		}
 																				
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
 					
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
-			
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
+		
+		
 		file.setEXOTime(timeNow);	
 	}
 	
