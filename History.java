@@ -22,6 +22,13 @@ public class History {
 	public  double HBH=0;
 	public  double LBH=0;
 	
+	public  double HPW=0;
+	public  double LPW=0;
+	public  double HBW=0;
+	public  double LBW=0;
+	
+	private int writes=0;
+	
 	public History(double totalHit ,double numInsert,double totalRequest,double varRatio){
 		this.totalHit=totalHit;
 		this.totalRequest=totalRequest;
@@ -92,7 +99,13 @@ public class History {
 	}
 	
 	public String toString(){
-		return "hit: "+totalHit +" Insert: "+ numInsert +" request: "+ totalRequest +" ratio: "+ varRatio+" BHR: "+ BHR+" BIR: "+ BIR+" BMR: "+ BMR;	
+		return "hit:"+totalHit+
+				" Insert:"+numInsert +
+				" Requests:"+totalRequest+
+				" Writes:"+writes+
+				" BHR:"+ BHR+
+				" BIR:"+ BIR+
+				" BMR:"+ BMR;	
 	}
 	
 	
@@ -150,6 +163,28 @@ public class History {
 			if(r==1)
 				LBH++;
 		}
+	}
+
+	public void incIdvWrite(int c,int num){
+		//this.writes = writes+num;
+		if(c==0){
+				HPW=HPW+num;
+		}else if(c==1){
+				LPW=LPW+num;
+		}else if(c==2){
+				HBW=HBW+num;
+		}else if(c==3){
+				LBW=LBW+num;
+		}
+	}
+
+	public int getWrites() {
+		return writes;
+	}
+
+
+	public void addWrites(int v) {
+		this.writes = writes+v;
 	}
 	
 	

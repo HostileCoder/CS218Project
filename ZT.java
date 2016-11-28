@@ -19,7 +19,7 @@ public class ZT {
 		ahp.setWeight(0,3,5);
 		ahp.setWeight(1,2,5);
 		ahp.setWeight(1,3,10);
-		ahp.setWeight(2,3,20);
+		ahp.setWeight(2,3,10);
 		ahp.findWeight();
 		System.out.println(ahp.getResult()[0]+" "+ahp.getResult()[1]+" "+ahp.getResult()[2]+" "+ahp.getResult()[3]);
 		

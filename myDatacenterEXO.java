@@ -1,7 +1,6 @@
 package CS218Project;
 
 
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,23 +13,19 @@ import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.HarddriveStorage;
 import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
-import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 
 public class myDatacenterEXO extends Datacenter{
 	//------------------------------------------------------------------------adopt
-	private int eventNum=0;
-	private int eventCap=5;
+
 	private int groupSize=10;
 	private TreeMap<Double, Group> groups = new TreeMap<Double, Group>();
 	private Map<Double,valueSet> candidateValue = new  TreeMap<Double,valueSet>();
-	private double preBHR=0;
-	private double preBIR=0;	
+
 	//------------------------------------------------------------------------
 	private HarddriveStorage Harddrive = null;
 	private ArrayList <UE_Context> Evict=new ArrayList <UE_Context>();
@@ -56,31 +51,6 @@ public class myDatacenterEXO extends Datacenter{
 		// TODO Auto-generated constructor stub	
 		Harddrive=(HarddriveStorage) storageList.get(0);	
 
-		
-		
-		//---------------------------------------------adopt		
-		double threshold = 1.0/(double) groupSize;
-		double nam=0.0;		
-		for(int i=0;i<groupSize;i++){
-			Group g= new Group(nam);
-			groups.put(nam, g);
-			nam=nam+threshold;
-			nam=Math.round(nam*10.0)/10.0;
-		}
-
-
-		for(double i=-1;i<=1.2;i=i+0.4){
-			double a=Math.pow(10, i);
-			a=Math.round(a*100.0);
-			a=a/100.0;
-//			valueSet v=new valueSet((double) 2*i);
-//			candidateValue.put((double) 2*i, v );			
-			valueSet v=new valueSet(a);
-			candidateValue.put(a, v );	
-			group(v);
-		}
-		
-		//---------------------------------------------
 		
 		ahp.setWeight(0,1,5);
 		ahp.setWeight(0,2,5);
@@ -122,12 +92,17 @@ public class myDatacenterEXO extends Datacenter{
 		if(result==1){
 			history.incTotalHit();		
 		}
+		
 		if(result==0||result==-2){       
 			history.incNumInsert();	
 			history.incTotalMiss();
+			history.addWrites(evicted);
+			history.incIdvWrite(file.getCriteria(),evicted);
 		}
 		if(result==-1){    
 			history.incTotalMiss();
+			history.addWrites(1);
+			history.incIdvWrite(file.getCriteria(),1);
 		}
 		
 		History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),ratio.getRatio());
@@ -136,19 +111,30 @@ public class myDatacenterEXO extends Datacenter{
 		rec.setPreBHR(history.getPreBHR());
 		rec.setPreBIR(history.getPreBIR());
 		records.add(rec);
-		System.out.println(time+" "+history+" 	Ratio:"+ratio.getRatio()+
-				" 	HP:"+history.HPH/history.HP+
-				" 	LP:"+history.LPH/history.LP+
-				" 	HB:"+history.HBH/history.HB+
-				" 	LB:"+history.LBH/history.LB
+		System.out.println(time+" "+history+
+				" 		HP:"+history.HPH/history.HP+
+				" 		LP:"+history.LPH/history.LP+
+				" 		HB:"+history.HBH/history.HB+
+				" 		LB:"+history.LBH/history.LB+
+				" 		"+history.HPW+
+				" 		"+history.LPW+
+				" 		"+history.HBW+
+				" 		"+history.LBW
 				);	 
 		
 
-		outputWriter.write(time+" "+history.getTotalRequest()+"	BHR:"+history.getBHR()+"  BIR:"+history.getBIR()+
-				" 	"+history.HPH/history.HP+
-				" 	"+history.LPH/history.LP+
-				" 	"+history.HBH/history.HB+
-				" 	"+history.LBH/history.LB+
+		outputWriter.write(time+
+				"   "+history.getWrites()+
+//				"	BHR:"+history.getBHR()+
+//				"   BIR:"+history.getBIR()+
+//				" 	"+history.HPH/history.HP+
+//				" 	"+history.LPH/history.LP+
+//				" 	"+history.HBH/history.HB+
+//				" 	"+history.LBH/history.LB+
+				" 	"+history.HPW+
+				" 	"+history.LPW+
+				" 	"+history.HBW+
+				" 	"+history.LBW+
 				"\n");	
 
 		
@@ -173,8 +159,6 @@ public class myDatacenterEXO extends Datacenter{
 			send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
 		}
 		
-		
-		//adopt();
 		
 	}
 	
@@ -232,71 +216,14 @@ public class myDatacenterEXO extends Datacenter{
 			//System.out.println("evict Harddrive..."+ e.getName());
 							
 		}	
-		evicted=evicted+Evict.size();
+		evicted=Evict.size();
 		Evict.clear();
 		insert(file);
 		Harddrive.addFile(file)	;
 		return -2;
 	}
 	
-	public void adopt(){
-		
-		History history = records.remove(0);			
-		eventNum++;				
-						
-		valueSet x=null;	
-		x=candidateValue.get(history.getVarRatio());
-		x.setValueBHR(history.getBHR());
-		x.setValueBIR(history.getBIR());
-		
-		if(eventNum==eventCap){
-			//Log.printLine("Adopt	Retrieved"+ x);
-			eventNum=0;			
-			double h=( history.getBHR() + 2*preBHR )/3; 
-			double i=( history.getBIR() + 2*preBIR )/3;
-			x.setValueBHR(h);
-			x.setValueBIR(i);
-			preBHR=h;
-		    preBIR=i;
-			
-			//System.out.println("Adopt	modified"+ x);
-			for(Group g: groups.values()){
-				if(g.getValueSetList().containsKey(x.getValueRatio())){
-					valueSet v = g.getValueSetList().remove(x.getValueRatio());
-					g.findRep();
-				}
-			}			
-			group(x);	
-			
-			//group with largest representative value (BHR)								
-			Group selected = null;						
-			double max=0.0;
-			for(Group g: groups.values()){
-				if(g.getRep()>=max){
-					max=g.getRep();
-					selected = g;
-				}
-			}
-
-			
-			//ratio with smallest BIR in the group
-			double newRatio;
-			if(selected.valueSetWithSmallestBIR()==null){
-				newRatio=ratio.getRatio();
-			}else
-				newRatio=selected.valueSetWithSmallestBIR().getValueRatio();
-				
-//			System.out.println("");	
-//			System.out.println("Adopt	group selected:"+selected);	
-//			System.out.println("Adopt	New Ratio:"+newRatio);
-//			System.out.println("Adopt	History inserted: "+history);		
-//			System.out.println(" ");			
-
-					
-			ratio.setRatio(newRatio);	
-			}
 	
-	}
 		
 	public void findEXOWeight(double lastScore,double a, double timeNow, double lastAccess){
 		double time = timeNow-lastAccess;	
@@ -316,11 +243,11 @@ public class myDatacenterEXO extends Datacenter{
 			file.setProbility(1);
 		}
 																				
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
 					
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
 		
 		
 		file.setEXOTime(timeNow);	
