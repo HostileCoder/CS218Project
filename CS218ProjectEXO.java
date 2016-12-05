@@ -118,7 +118,7 @@ public class CS218ProjectEXO {
 			while(x!=0){
 				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
-				if(d > 0.5){
+				if(d > 0.4){
 					UE_Context u=m.get(oz.nextInt(m.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
