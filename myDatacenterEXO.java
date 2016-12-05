@@ -43,6 +43,10 @@ public class myDatacenterEXO extends Datacenter{
 	private UE_Context file=null;
 	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
+	private int missInsert=0;
+	private int missNoInsert=0;
+	private int missInsertEvict=0;
+	private int totalEvicts=0;
 
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
 	public myDatacenterEXO(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -56,8 +60,8 @@ public class myDatacenterEXO extends Datacenter{
 		ahp.setWeight(0,2,5);
 		ahp.setWeight(0,3,5);
 		ahp.setWeight(1,2,5);
-		ahp.setWeight(1,3,10);
-		ahp.setWeight(2,3,10);
+		ahp.setWeight(1,3,5);
+		ahp.setWeight(2,3,5);
 		ahp.findWeight();
 		
 	}
@@ -76,7 +80,7 @@ public class myDatacenterEXO extends Datacenter{
 		int result= handleRequest(time);
 		history.incTotalRequest();
 		
-		history.incCriteria(file.getCriteria(),result);
+		history.incIdvHit(file.getCriteria(),result);
 				
 		if(result==0){
 			//Log.printLine("Cache:Missed!");
@@ -89,21 +93,46 @@ public class myDatacenterEXO extends Datacenter{
 		}
 		
 		
+		//Cache:Hit!
 		if(result==1){
-			history.incTotalHit();		
+			history.incTotalHit();	
+			
+			history.incMobilityHit(file.getCriteria(), 1);
 		}
 		
+		//-2:Cache:Missed!, with eviction and insertion
+		//0:Cache:Missed!
 		if(result==0||result==-2){       
 			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
 			history.incTotalMiss();
 			history.addWrites(evicted);
 			history.incIdvWrite(file.getCriteria(),evicted);
+			
+			history.incMobilityInsert(file.getCriteria(),1);
+			history.incMobilityWrite(file.getCriteria(),evicted);
 		}
+		
+		
+		//Cache:Missed!, No insertion
 		if(result==-1){    
 			history.incTotalMiss();
 			history.addWrites(1);
 			history.incIdvWrite(file.getCriteria(),1);
+			
+			history.incMobilityWrite(file.getCriteria(),1);
 		}
+		
+		
+		if(result==0){
+			missInsert++;
+		}else if(result==-1){
+			missNoInsert++;
+		}else if(result==-2){
+			missInsertEvict++;
+			totalEvicts=totalEvicts+evicted;
+		}
+		
 		
 		History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),ratio.getRatio());
 		rec.setBHR(history.getBHR());
@@ -124,17 +153,37 @@ public class myDatacenterEXO extends Datacenter{
 		
 
 		outputWriter.write(time+
-				"   "+history.getWrites()+
 //				"	BHR:"+history.getBHR()+
 //				"   BIR:"+history.getBIR()+
 //				" 	"+history.HPH/history.HP+
 //				" 	"+history.LPH/history.LP+
 //				" 	"+history.HBH/history.HB+
 //				" 	"+history.LBH/history.LB+
-				" 	"+history.HPW+
-				" 	"+history.LPW+
-				" 	"+history.HBW+
-				" 	"+history.LBW+
+//				"   "+history.getWrites()+				
+//				" 	"+history.HPW+
+//				" 	"+history.LPW+
+//				" 	"+history.HBW+
+//				" 	"+history.LBW+
+//				"   "+history.getNumInsert()+
+//				" 	"+history.HPI+
+//				" 	"+history.LPI+
+//				" 	"+history.HBI+
+//				" 	"+history.LBI+
+//				"   "+history.getTotalHit()+	
+//				" 	"+history.HPH+
+//				" 	"+history.LPH+
+//				" 	"+history.HBH+
+//				" 	"+history.LBH+
+//				" 	"+history.HMH+
+//				" 	"+history.LMH+
+//				" 	"+history.HMW+
+//				" 	"+history.LMW+
+//				" 	"+history.HMI+
+//				" 	"+history.LMI+
+				" 	"+missInsert+
+				" 	"+missNoInsert+
+				" 	"+missInsertEvict+
+				" 	"+totalEvicts+
 				"\n");	
 
 		
@@ -180,6 +229,7 @@ public class myDatacenterEXO extends Datacenter{
 			used=used+file.getSize();
 			insert(file);
 			Harddrive.addFile(file)	;
+			evicted=0;
 			return 0;
 		}
 					

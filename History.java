@@ -12,6 +12,16 @@ public class History {
 	private double preBHR=0.0;
 	private double preBIR=0.0;
 	
+	
+	public  double HMI=0;
+	public  double LMI=0;
+	
+	public  double HMH=0;
+	public  double LMH=0;
+	
+	public  double HMW=0;
+	public  double LMW=0;
+	
 	public  double HP=0;
 	public  double LP=0;
 	public  double HB=0;
@@ -26,6 +36,11 @@ public class History {
 	public  double LPW=0;
 	public  double HBW=0;
 	public  double LBW=0;
+	
+	public  double HPI=0;
+	public  double LPI=0;
+	public  double HBI=0;
+	public  double LBI=0;
 	
 	private int writes=0;
 	
@@ -145,7 +160,7 @@ public class History {
 		setBIR(numInsert/totalRequest);
 	}
 	
-	public void incCriteria(int c,int r){
+	public void incIdvHit(int c,int r){
 		if(c==0){
 			HP++;
 			if(r==1)
@@ -177,6 +192,45 @@ public class History {
 				LBW=LBW+num;
 		}
 	}
+	
+	
+	
+	public void incIdvInsert(int c,int num){
+		if(c==0){
+				HPI=HPI+num;
+		}else if(c==1){
+				LPI=LPI+num;
+		}else if(c==2){
+				HBI=HBI+num;
+		}else if(c==3){
+				LBI=LBI+num;
+		}
+	}
+	
+	public void incMobilityHit(int c,int num){
+		if(c==0||c==2){
+			HMH=HMH+num;
+		}else if(c==1||c==3){
+			LMH=LMH+num;
+		}
+	}
+	
+	public void incMobilityInsert(int c,int num){
+		if(c==0||c==2){
+			HMI=HMI+num;
+		}else if(c==1||c==3){
+			LMI=LMI+num;
+		}
+	}
+	
+	public void incMobilityWrite(int c,int num){
+		if(c==0||c==2){
+			HMW=HMW+num;
+		}else if(c==1||c==3){
+			LMW=LMW+num;
+		}
+	}
+		
 
 	public int getWrites() {
 		return writes;

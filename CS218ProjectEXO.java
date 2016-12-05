@@ -103,7 +103,7 @@ public class CS218ProjectEXO {
 			ArrayList<UE_Context> s = new ArrayList<UE_Context>();
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
-				if(c<2){
+				if(c==0||c==2){
 					m.add(u);
 				}else{
 					s.add(u);
@@ -115,16 +115,17 @@ public class CS218ProjectEXO {
 			int x=sizeReq;
 			
 			
-			while(x!=0){				
+			while(x!=0){
+				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
-				if(d > 0.2){
-					UE_Context u=UE.get(oz.nextInt(m.size()));
+				if(d > 0.5){
+					UE_Context u=m.get(oz.nextInt(m.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 				}else{
-					UE_Context u=UE.get(oz.nextInt(s.size()));
+					UE_Context u=s.get(oz.nextInt(s.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
@@ -133,6 +134,27 @@ public class CS218ProjectEXO {
 				x--;
 				id++;
 			}
+			
+			
+//			while(x!=0){	
+//				double d = Math.random();
+//				UE_Context u=UE.get(oz.nextInt(UE.size()));
+//				double c=u.getCriteria();				
+//				if((c==0||c==2) && d>0.2){
+//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+//					cloudlet.setUserId(brokerId);
+//					cloudlet.setVmId(vmid);
+//					cloudletList.add(cloudlet);
+//				}
+//				if((c==1||c==3) && d<=0.2){
+//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+//					cloudlet.setUserId(brokerId);
+//					cloudlet.setVmId(vmid);
+//					cloudletList.add(cloudlet);
+//				}				
+//				x--;
+//				id++;
+//			}
 			
 								
 			// submit cloudlet list to the broker
@@ -177,12 +199,23 @@ public class CS218ProjectEXO {
 			}
 		}
 		
-//		for(int i=0;i<400;i++){
-//			UE.get(i).setCriteria(0);
+		
+		
+//		for(int i=0;i<800;i++){
+//			int x=oz.nextInt(1);
+//			if(x==1){
+//				UE.get(i).setCriteria(0);
+//			}else
+//				UE.get(i).setCriteria(2);
+//			
 //		}
 //		
-//		for(int i=400;i<1000;i++){
-//			UE.get(i).setCriteria(3);
+//		for(int i=800;i<1000;i++){
+//			int x=oz.nextInt(1);
+//			if(x==1){
+//				UE.get(i).setCriteria(1);
+//			}else
+//				UE.get(i).setCriteria(3);
 //		}
 		
 		return UE;
