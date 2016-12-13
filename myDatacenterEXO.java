@@ -47,6 +47,15 @@ public class myDatacenterEXO extends Datacenter{
 	private int missNoInsert=0;
 	private int missInsertEvict=0;
 	private int totalEvicts=0;
+	
+
+	public  int missInsertL=0;
+	public  int missNoInsertL=0;
+	public  int missInsertEvictL=0;
+	
+	public  int missInsertH=0;
+	public  int missNoInsertH=0;
+	public  int missInsertEvictH=0;
 
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
 	public myDatacenterEXO(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -123,13 +132,30 @@ public class myDatacenterEXO extends Datacenter{
 			history.incMobilityWrite(file.getCriteria(),1);
 		}
 		
+		int c=file.getCriteria();
 		
 		if(result==0){
 			missInsert++;
+			if(c==0||c==2){
+				missInsertH++;
+			}else if(c==1||c==3){
+				missInsertL++;
+			}
 		}else if(result==-1){
 			missNoInsert++;
+			if(c==0||c==2){
+				missNoInsertH++;
+			}else if(c==1||c==3){
+				missNoInsertL++;
+			}
 		}else if(result==-2){
 			missInsertEvict++;
+			if(c==0||c==2){
+				missInsertEvictH++;
+			}else if(c==1||c==3){
+				missInsertEvictL++;
+			}
+			
 			totalEvicts=totalEvicts+evicted;
 		}
 		
@@ -159,31 +185,38 @@ public class myDatacenterEXO extends Datacenter{
 //				" 	"+history.LPH/history.LP+
 //				" 	"+history.HBH/history.HB+
 //				" 	"+history.LBH/history.LB+
-				"   "+history.getWrites()+				
-				" 	"+history.HPW+
-				" 	"+history.LPW+
-				" 	"+history.HBW+
-				" 	"+history.LBW+
-				"   "+history.getNumInsert()+
-				" 	"+history.HPI+
-				" 	"+history.LPI+
-				" 	"+history.HBI+
-				" 	"+history.LBI+
-				"   "+history.getTotalHit()+	
-				" 	"+history.HPH+
-				" 	"+history.LPH+
-				" 	"+history.HBH+
-				" 	"+history.LBH+
+//				"   "+history.getWrites()+				
+//				" 	"+history.HPW+
+//				" 	"+history.LPW+
+//				" 	"+history.HBW+
+//				" 	"+history.LBW+
+//				"   "+history.getNumInsert()+
+//				" 	"+history.HPI+
+//				" 	"+history.LPI+
+//				" 	"+history.HBI+
+//				" 	"+history.LBI+
+//				"   "+history.getTotalHit()+	
+//				" 	"+history.HPH+
+//				" 	"+history.LPH+
+//				" 	"+history.HBH+
+//				" 	"+history.LBH+
 //				" 	"+history.HMH+
 //				" 	"+history.LMH+
 //				" 	"+history.HMW+
 //				" 	"+history.LMW+
 //				" 	"+history.HMI+
 //				" 	"+history.LMI+
-//				" 	"+missInsert+
-//				" 	"+missNoInsert+
-//				" 	"+missInsertEvict+
-//				" 	"+totalEvicts+
+				" 	"+missInsert+
+				" 	"+missNoInsert+
+				" 	"+missInsertEvict+
+				" 	"+totalEvicts+
+				" 	"+missInsertH+
+				" 	"+missInsertL+
+				" 	"+missNoInsertH+
+				" 	"+missNoInsertL+
+				" 	"+missInsertEvictH+
+				" 	"+missInsertEvictL+
+				" 	"+totalEvicts+
 				"\n");	
 
 		

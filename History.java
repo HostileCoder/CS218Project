@@ -12,6 +12,7 @@ public class History {
 	private double preBHR=0.0;
 	private double preBIR=0.0;
 	
+
 	
 	public  double HMI=0;
 	public  double LMI=0;
