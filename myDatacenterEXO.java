@@ -16,24 +16,18 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 
 public class myDatacenterEXO extends Datacenter{
-	//------------------------------------------------------------------------adopt
 
-	private int groupSize=10;
-	private TreeMap<Double, Group> groups = new TreeMap<Double, Group>();
-	private Map<Double,valueSet> candidateValue = new  TreeMap<Double,valueSet>();
-
-	//------------------------------------------------------------------------
-	private HarddriveStorage Harddrive = null;
+	private HarddriveStorage HD0 = null;
+	private VRAM RAM0=null;
 	private ArrayList <UE_Context> Evict=new ArrayList <UE_Context>();
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
-	private ArrayList <History> records = new ArrayList<History>();
 	private AHP ahp =new AHP(4);
 	private int agingFac=0;
-
 	
 	private int evicted=0;
 	private double used=0;
@@ -43,11 +37,7 @@ public class myDatacenterEXO extends Datacenter{
 	private UE_Context file=null;
 	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
-	private int missInsert=0;
-	private int missNoInsert=0;
-	private int missInsertEvict=0;
 	private int totalEvicts=0;
-	
 
 	public  int missInsertL=0;
 	public  int missNoInsertL=0;
@@ -57,14 +47,23 @@ public class myDatacenterEXO extends Datacenter{
 	public  int missNoInsertH=0;
 	public  int missInsertEvictH=0;
 
+	
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
+	private List<myVm> vmlist = null;
+	private Host host0=null;
+	
+	private int missInsert=0;
+	private int missNoInsert=0;
+	private int missInsertEvict=0;
+	private ArrayList <History> records = new ArrayList<History>();
+	
+	
 	public myDatacenterEXO(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		// TODO Auto-generated constructor stub	
-		Harddrive=(HarddriveStorage) storageList.get(0);	
-
-		
+		HD0=(HarddriveStorage) storageList.get(0);	
+	
 		ahp.setWeight(0,1,5);
 		ahp.setWeight(0,2,5);
 		ahp.setWeight(0,3,5);
@@ -73,22 +72,34 @@ public class myDatacenterEXO extends Datacenter{
 		ahp.setWeight(2,3,5);
 		ahp.findWeight();
 		
+		host0= this.getHostList().get(0);
+		vmlist=host0.getVmList();
+		
 	}
 	
 	
 	
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
-		double time = ev.eventTime();
-			
+	
+
+		//System.out.println(vmlist.get(0).getId());
+	
+		double time = ev.eventTime();			
 		myCloudlet cl = (myCloudlet) ev.getData();
 		
-		//time=cl.getSubmissionTime();
-		//System.out.println(time);
+		
+		int UserId = cl.getUserId();
+		int VmId = cl.getVmId();
+		Host Host = getVmAllocationPolicy().getHost(VmId, UserId);
+		Vm VM = Host.getVm(VmId, UserId);
+		RAM0= ((myVm) VM).getVram();
+		history = ((myVm) VM).getHistory();
+		CacheState = ((myVm) VM).getCacheState();
+		
 		
 		file = cl.getUE();			
 		int result= handleRequest(time);
-		history.incTotalRequest();
-		
+		history.incTotalRequest();		
 		history.incIdvHit(file.getCriteria(),result);
 				
 		if(result==0){
@@ -104,8 +115,7 @@ public class myDatacenterEXO extends Datacenter{
 		
 		//Cache:Hit!
 		if(result==1){
-			history.incTotalHit();	
-			
+			history.incTotalHit();				
 			history.incMobilityHit(file.getCriteria(), 1);
 		}
 		
@@ -160,17 +170,14 @@ public class myDatacenterEXO extends Datacenter{
 		}
 		
 		
-		History rec=new History(history.getTotalHit(), history.getNumInsert(), history.getTotalRequest(),ratio.getRatio());
-		rec.setBHR(history.getBHR());
-		rec.setBIR(history.getBIR());					
-		rec.setPreBHR(history.getPreBHR());
-		rec.setPreBIR(history.getPreBIR());
-		records.add(rec);
+	
 		System.out.println(time+" "+history+
 				" 		HP:"+history.HPH/history.HP+
 				" 		LP:"+history.LPH/history.LP+
 				" 		HB:"+history.HBH/history.HB+
 				" 		LB:"+history.LBH/history.LB+
+				"		HMH=:"+history.HMH/history.getTotalRequest()+
+				"		LMH=:"+history.LMH/history.getTotalRequest()+		
 				" 		"+history.HPW+
 				" 		"+history.LPW+
 				" 		"+history.HBW+
@@ -206,10 +213,10 @@ public class myDatacenterEXO extends Datacenter{
 //				" 	"+history.LMW+
 //				" 	"+history.HMI+
 //				" 	"+history.LMI+
-				" 	"+missInsert+
-				" 	"+missNoInsert+
-				" 	"+missInsertEvict+
-				" 	"+totalEvicts+
+//				" 	"+missInsert+
+//				" 	"+missNoInsert+
+//				" 	"+missInsertEvict+
+//				" 	"+totalEvicts+
 				" 	"+missInsertH+
 				" 	"+missInsertL+
 				" 	"+missNoInsertH+
@@ -245,12 +252,16 @@ public class myDatacenterEXO extends Datacenter{
 	}
 	
 
-	private int handleRequest(double time){			
-		used=Harddrive.getCurrentSize();
-		capacity=Harddrive.getCapacity();
+	private int handleRequest(double time) {		
+//		used= HD0.getCurrentSize();
+//		capacity= HD0.getCapacity();
 		
-		//System.out.println("Used:"+used+" Capacity:"+capacity);	---------------------------------------------------------------------------	
 		
+		
+		used=RAM0.getUsed();
+		capacity=RAM0.getSize();
+		
+		//System.out.println("Used:"+used+" Capacity:"+capacity);	---------------------------------------------------------------------------			
 		findEXOWeight(file.getEXOScore(),ratio.getRatio(),time,file.getEXOTime());
 		//findLFUWeight();
 		
@@ -261,7 +272,8 @@ public class myDatacenterEXO extends Datacenter{
 		if(file.getSize()+used<=capacity){
 			used=used+file.getSize();
 			insert(file);
-			Harddrive.addFile(file)	;
+			HD0.addFile(file);
+			RAM0.addFile(file);
 			evicted=0;
 			return 0;
 		}
@@ -295,14 +307,16 @@ public class myDatacenterEXO extends Datacenter{
 		
 		//remove from Cache
 		for(UE_Context e: Evict){
-			Harddrive.deleteFile(e);
-			//System.out.println("evict Harddrive..."+ e.getName());
-							
+			HD0.deleteFile(e);
+			RAM0.removeFile(e);
+			//System.out.println("evict Harddrive..."+ e.getName());						
 		}	
+		
 		evicted=Evict.size();
 		Evict.clear();
 		insert(file);
-		Harddrive.addFile(file)	;
+		HD0.addFile(file);
+		RAM0.addFile(file);
 		return -2;
 	}
 	
@@ -326,11 +340,11 @@ public class myDatacenterEXO extends Datacenter{
 			file.setProbility(1);
 		}
 																				
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
 					
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
 		
 		
 		file.setEXOTime(timeNow);	
@@ -359,24 +373,7 @@ public class myDatacenterEXO extends Datacenter{
 		Collections.sort(CacheState);
 	}
 		
-	public void group(valueSet v){
-		double x = v.getValueBHR();
-		if(x<=0.1){
-			Group g = groups.get(0.0);
-			g.addvalue(v);
-			//System.out.println("insert at group 0.0");
-			return;
-		}
-		
-		for(Group g : groups.values()){
-			if(x-g.getName()<0.1){
-				g.addvalue(v);
-				//System.out.println("insert at group "+g.getName());
-				return;
-			}
-		}		
-	}	
-	
+
 	public double getAHPWeight(UE_Context file){
 		if(file.getCriteria()==0){
 			return ahp.getResult()[0];
@@ -389,4 +386,5 @@ public class myDatacenterEXO extends Datacenter{
 		}
 		return 1;	
 	}
+	
 }

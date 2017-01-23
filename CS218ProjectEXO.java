@@ -29,7 +29,7 @@ public class CS218ProjectEXO {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
-		Log.printLine("Starting CloudSimExample2...");
+		Log.printLine("Starting Project298...");
 		Log.disable();
 		try {
 			// First step: Initialize the CloudSim package. It should be called before creating any entities.
@@ -74,14 +74,14 @@ public class CS218ProjectEXO {
 			int vmid = 0;
 			int mips = 1000;
 			long size = 10000; // image size (MB)
-			int ram = 512; // vm memory (MB)
+			int ram = 200; // vm memory (MB)
 			long bw = 1000;
 			int pesNumber = 1; // number of cpus
 			String vmm = "Xen"; // VMM name
 
 			// create VM
-			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
-
+			Vm vm = new myVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
+			
 			// add the VM to the vmList
 			vmlist.add(vm);
 
@@ -111,21 +111,21 @@ public class CS218ProjectEXO {
 			}
 			
 			
-			Random oz=new Random(); 
+			Random rn=new Random(); 
 			int x=sizeReq;
-			
-			
+		
+		
 			while(x!=0){
 				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
 				if(d > 0.2){
-					UE_Context u=m.get(oz.nextInt(m.size()));
+					UE_Context u=m.get(rn.nextInt(m.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 				}else{
-					UE_Context u=s.get(oz.nextInt(s.size()));
+					UE_Context u=s.get(rn.nextInt(s.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
@@ -135,28 +135,8 @@ public class CS218ProjectEXO {
 				id++;
 			}
 			
-			
-//			while(x!=0){	
-//				double d = Math.random();
-//				UE_Context u=UE.get(oz.nextInt(UE.size()));
-//				double c=u.getCriteria();				
-//				if((c==0||c==2) && d>0.2){
-//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-//					cloudlet.setUserId(brokerId);
-//					cloudlet.setVmId(vmid);
-//					cloudletList.add(cloudlet);
-//				}
-//				if((c==1||c==3) && d<=0.2){
-//					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-//					cloudlet.setUserId(brokerId);
-//					cloudlet.setVmId(vmid);
-//					cloudletList.add(cloudlet);
-//				}				
-//				x--;
-//				id++;
-//			}
-			
-								
+
+										
 			// submit cloudlet list to the broker
 			broker.submitCloudletList(cloudletList);
 
@@ -250,7 +230,7 @@ public class CS218ProjectEXO {
 		// 4. Create Host with its id and list of PEs and add them to the list
 		// of machines
 		int hostId = 0;
-		int ram = 2048; // host memory (MB)
+		int ram = 3000*10; // host memory (MB)
 		long storage = 1000000; // host storage
 		int bw = 10000;
 
@@ -284,7 +264,7 @@ public class CS218ProjectEXO {
 		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeHD);
 		storageList.add(hd);
 		fillhardrive(hd);
-		
+
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
 				costPerStorage, costPerBw);

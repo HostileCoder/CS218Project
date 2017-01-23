@@ -9,8 +9,8 @@ public class History {
 	private double BHR=0.0;
 	private double BIR=0.0;
 	private double varRatio=1.0;
-	private double preBHR=0.0;
-	private double preBIR=0.0;
+//	private double preBHR=0.0;
+//	private double preBIR=0.0;
 	
 
 	
@@ -95,24 +95,6 @@ public class History {
 	}
 
 
-	public double getPreBHR() {
-		return preBHR;
-	}
-
-
-	public void setPreBHR(double preBHR) {
-		this.preBHR = preBHR;
-	}
-
-
-	public double getPreBIR() {
-		return preBIR;
-	}
-
-
-	public void setPreBIR(double preBIR) {
-		this.preBIR = preBIR;
-	}
 	
 	public String toString(){
 		return "hit:"+totalHit+
@@ -136,16 +118,16 @@ public class History {
 	
 	public void incTotalHit() {
 		totalHit = totalHit+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
+//		setPreBHR(BHR);
+//		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
 
 	public void incNumInsert() {
 		numInsert = numInsert+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
+//		setPreBHR(BHR);
+//		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
@@ -155,8 +137,8 @@ public class History {
 	
 	public void incTotalRequest() {
 		totalRequest = totalRequest+1;
-		setPreBHR(BHR);
-		setPreBIR(BIR);
+//		setPreBHR(BHR);
+//		setPreBIR(BIR);
 		setBHR(totalHit/totalRequest);
 		setBIR(numInsert/totalRequest);
 	}
@@ -241,6 +223,26 @@ public class History {
 	public void addWrites(int v) {
 		this.writes = writes+v;
 	}
+	
+	
+//	public double getPreBHR() {
+//	return preBHR;
+//}
+//
+//
+//public void setPreBHR(double preBHR) {
+//	this.preBHR = preBHR;
+//}
+//
+//
+//public double getPreBIR() {
+//	return preBIR;
+//}
+//
+//
+//public void setPreBIR(double preBIR) {
+//	this.preBIR = preBIR;
+//}
 	
 	
 }
