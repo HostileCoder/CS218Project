@@ -23,16 +23,14 @@ import org.cloudbus.cloudsim.Vm;
  * @since CloudSim Toolkit 1.0
  */
 public class myVm extends Vm {
-	private double U;
-	private double Contribution;
-	private double Share;
-	private double Demand;
-	private double A;
-	private double V;
+
 	private VRAM vram;
 	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
+	private int reqRam=0;
+	private int spareRam=0;
+	private int userSize=0;
 	/**
 	 * Creates a new Vm object.
 	 * 
@@ -86,10 +84,8 @@ public class myVm extends Vm {
 		setCurrentAllocatedMips(null);
 		setCurrentAllocatedRam(0);
 		setCurrentAllocatedSize(0);
-	
 		
-		
-		A=this.getMips()+this.getRam();
+
 	}
 
 
@@ -102,18 +98,6 @@ public class myVm extends Vm {
 		this.vram = vram;
 	}
 	
-	public void resetContribution(){
-		Contribution = Share - Demand;
-	}
-	
-	public void resetU(){
-		U = Demand/Share;
-	}
-
-	public void resetV(){
-		resetContribution();
-		V = (Demand-Share)/A;
-	}
 
 
 	public History getHistory() {
@@ -133,5 +117,39 @@ public class myVm extends Vm {
 
 	public void setCacheState(ArrayList<UE_Context> cacheState) {
 		CacheState = cacheState;
+	}
+
+
+	public int getReqRam() {
+		return reqRam;
+	}
+
+
+	public void setReqRam(int reqRam) {
+		this.reqRam = reqRam;
+	}
+
+
+	public int getUserSize() {
+		return userSize;
+	}
+
+
+	public void setUserSize(int userSize) {
+		this.userSize = userSize;
+	}
+	
+	public double getRamToUserRatio(){
+		return (double)getRam()/(double)userSize;
+	}
+
+
+	public int getSpareRam() {
+		return spareRam;
+	}
+
+
+	public void setSpareRam(int spareRam) {
+		this.spareRam = spareRam;
 	}
 }
