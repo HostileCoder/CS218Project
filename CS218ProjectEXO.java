@@ -74,7 +74,7 @@ public class CS218ProjectEXO {
 			int vmid = 0;
 			int mips = 1000;
 			long size = 10000; // image size (MB)
-			int ram = 200; // vm memory (MB)
+			int ram = sizeHD; // vm memory (MB)
 			long bw = 1000;
 			int pesNumber = 1; // number of cpus
 			String vmm = "Xen"; // VMM name

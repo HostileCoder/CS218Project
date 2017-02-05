@@ -314,18 +314,18 @@ public class myDatacenterEXO extends Datacenter{
 		
 		
 	
-//		System.out.println(time+" "+history+
-//				" 		HP:"+history.HPH/history.HP+
-//				" 		LP:"+history.LPH/history.LP+
-//				" 		HB:"+history.HBH/history.HB+
-//				" 		LB:"+history.LBH/history.LB+
-//				"		HMH=:"+history.HMH/history.getTotalRequest()+
-//				"		LMH=:"+history.LMH/history.getTotalRequest()+		
-//				" 		"+history.HPW+
-//				" 		"+history.LPW+
-//				" 		"+history.HBW+
-//				" 		"+history.LBW
-//				);	 
+		System.out.println(time+" "+history+
+				" 		HP:"+history.HPH/history.HP+
+				" 		LP:"+history.LPH/history.LP+
+				" 		HB:"+history.HBH/history.HB+
+				" 		LB:"+history.LBH/history.LB+
+				"		HMH=:"+history.HMH/history.getTotalRequest()+
+				"		LMH=:"+history.LMH/history.getTotalRequest()+		
+				" 		"+history.HPW+
+				" 		"+history.LPW+
+				" 		"+history.HBW+
+				" 		"+history.LBW
+				);	 
 		
 
 		outputWriter.write(time+
