@@ -22,6 +22,7 @@ public class CS218ProjectEXO {
     private static int sizeHD=200;
     private static double lambda=10;
     private static int sizeReq=20000;
+    private static double LHMRatio=0.2;
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -118,7 +119,7 @@ public class CS218ProjectEXO {
 			while(x!=0){
 				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
-				if(d > 0.2){
+				if(d > LHMRatio){
 					UE_Context u=m.get(rn.nextInt(m.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
