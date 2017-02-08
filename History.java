@@ -9,41 +9,41 @@ public class History {
 	private double BHR=0.0;
 	private double BIR=0.0;
 	private double varRatio=1.0;
-//	private double preBHR=0.0;
-//	private double preBIR=0.0;
-	
 
 	
-	public  double HMI=0;
-	public  double LMI=0;
+//	//HL insert
+//	public  double HMI=0;
+//	public  double LMI=0;
+//	
+//	//HL hit
+//	public  double HMH=0;
+//	public  double LMH=0;
+//	
+//	//HL write
+//	public  double HMW=0;
+//	public  double LMW=0;
 	
-	public  double HMH=0;
-	public  double LMH=0;
+	public  double L1=0;
+	public  double L2=0;
+	public  double L3=0;
+	public  double L4=0;
 	
-	public  double HMW=0;
-	public  double LMW=0;
+	public  double L1H=0;
+	public  double L2H=0;
+	public  double L3H=0;
+	public  double L4H=0;
 	
-	public  double HP=0;
-	public  double LP=0;
-	public  double HB=0;
-	public  double LB=0;
+	public  double L1W=0;
+	public  double L2W=0;
+	public  double L3W=0;
+	public  double L4W=0;
 	
-	public  double HPH=0;
-	public  double LPH=0;
-	public  double HBH=0;
-	public  double LBH=0;
+	public  double L1I=0;
+	public  double L2I=0;
+	public  double L3I=0;
+	public  double L4I=0;
 	
-	public  double HPW=0;
-	public  double LPW=0;
-	public  double HBW=0;
-	public  double LBW=0;
-	
-	public  double HPI=0;
-	public  double LPI=0;
-	public  double HBI=0;
-	public  double LBI=0;
-	
-	private int writes=0;
+	public int writes=0;
 	
 	public History(double totalHit ,double numInsert,double totalRequest,double varRatio){
 		this.totalHit=totalHit;
@@ -145,34 +145,34 @@ public class History {
 	
 	public void incIdvHit(int c,int r){
 		if(c==0){
-			HP++;
+			L1++;
 			if(r==1)
-				HPH++;
+				L1H++;
 		}else if(c==1){
-			LP++;
+			L2++;
 			if(r==1)
-				LPH++;
+				L2H++;
 		}else if(c==2){
-			HB++;
+			L3++;
 			if(r==1)
-				HBH++;
+				L3H++;
 		}else if(c==3){
-			LB++;
+			L4++;
 			if(r==1)
-				LBH++;
+				L4H++;
 		}
 	}
 
 	public void incIdvWrite(int c,int num){
 		//this.writes = writes+num;
 		if(c==0){
-				HPW=HPW+num;
+				L1W=L1W+num;
 		}else if(c==1){
-				LPW=LPW+num;
+				L2W=L2W+num;
 		}else if(c==2){
-				HBW=HBW+num;
+				L3W=L3W+num;
 		}else if(c==3){
-				LBW=LBW+num;
+				L4W=L4W+num;
 		}
 	}
 	
@@ -180,40 +180,16 @@ public class History {
 	
 	public void incIdvInsert(int c,int num){
 		if(c==0){
-				HPI=HPI+num;
+				L1I=L1I+num;
 		}else if(c==1){
-				LPI=LPI+num;
+				L2I=L2I+num;
 		}else if(c==2){
-				HBI=HBI+num;
+				L3I=L3I+num;
 		}else if(c==3){
-				LBI=LBI+num;
+				L4I=L4I+num;
 		}
 	}
 	
-	public void incMobilityHit(int c,int num){
-		if(c==0||c==2){
-			HMH=HMH+num;
-		}else if(c==1||c==3){
-			LMH=LMH+num;
-		}
-	}
-	
-	public void incMobilityInsert(int c,int num){
-		if(c==0||c==2){
-			HMI=HMI+num;
-		}else if(c==1||c==3){
-			LMI=LMI+num;
-		}
-	}
-	
-	public void incMobilityWrite(int c,int num){
-		if(c==0||c==2){
-			HMW=HMW+num;
-		}else if(c==1||c==3){
-			LMW=LMW+num;
-		}
-	}
-		
 
 	public int getWrites() {
 		return writes;
@@ -244,5 +220,30 @@ public class History {
 //	this.preBIR = preBIR;
 //}
 	
+
+	
+//	public void incMobilityHit(int c,int num){
+//	if(c==0||c==2){
+//		HMH=HMH+num;
+//	}else if(c==1||c==3){
+//		LMH=LMH+num;
+//	}
+//}
+//
+//public void incMobilityInsert(int c,int num){
+//	if(c==0||c==2){
+//		HMI=HMI+num;
+//	}else if(c==1||c==3){
+//		LMI=LMI+num;
+//	}
+//}
+//
+//public void incMobilityWrite(int c,int num){
+//	if(c==0||c==2){
+//		HMW=HMW+num;
+//	}else if(c==1||c==3){
+//		LMW=LMW+num;
+//	}
+//}
 	
 }

@@ -19,10 +19,10 @@ public class CS218ProjectEXO {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=1000;
-    private static int sizeHD=200;
+    private static int sizeHD=500;
     private static double lambda=10;
     private static int sizeReq=20000;
-    private static double LHMRatio=0.2;
+    private static double SLARatio=0.0666;
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -100,14 +100,21 @@ public class CS218ProjectEXO {
 			UtilizationModel utilizationModel = new UtilizationModelFull();
 
 		
-			ArrayList<UE_Context> m = new ArrayList<UE_Context>();
-			ArrayList<UE_Context> s = new ArrayList<UE_Context>();
+			ArrayList<UE_Context> l1 = new ArrayList<UE_Context>();
+			ArrayList<UE_Context> l2 = new ArrayList<UE_Context>();
+			ArrayList<UE_Context> l3 = new ArrayList<UE_Context>();
+			ArrayList<UE_Context> l4 = new ArrayList<UE_Context>();
+			
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
-				if(c==0||c==2){
-					m.add(u);
-				}else{
-					s.add(u);
+				if(c==0){
+					l1.add(u);
+				}else if(c==1){
+					l2.add(u);
+				}else if(c==2){
+					l3.add(u);
+				}else if(c==3){
+					l4.add(u);
 				}
 			}
 			
@@ -119,14 +126,26 @@ public class CS218ProjectEXO {
 			while(x!=0){
 				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
-				if(d > LHMRatio){
-					UE_Context u=m.get(rn.nextInt(m.size()));
+				if(d <= SLARatio){
+					UE_Context u=l4.get(rn.nextInt(l4.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-				}else{
-					UE_Context u=s.get(rn.nextInt(s.size()));
+				}else if(d <= SLARatio*2){
+					UE_Context u=l3.get(rn.nextInt(l3.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					cloudlet.setUserId(brokerId);
+					cloudlet.setVmId(vmid);
+					cloudletList.add(cloudlet);
+				}else if(d <= SLARatio*4){
+					UE_Context u=l2.get(rn.nextInt(l2.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					cloudlet.setUserId(brokerId);
+					cloudlet.setVmId(vmid);
+					cloudletList.add(cloudlet);
+				}else {
+					UE_Context u=l1.get(rn.nextInt(l1.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);

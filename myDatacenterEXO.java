@@ -259,75 +259,103 @@ public class myDatacenterEXO extends Datacenter{
 		//Cache:Hit!
 		if(result==1){
 			history.incTotalHit();				
-			history.incMobilityHit(file.getCriteria(), 1);
+			//history.incMobilityHit(file.getCriteria(), 1);
+		}
+		
+
+		//0:Cache:Missed!
+		if(result==0){    
+			history.incTotalMiss();
+			
+			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
+			//history.incMobilityInsert(file.getCriteria(),1);
+			
+			history.addWrites(1);
+			history.incIdvWrite(file.getCriteria(),1);			
+			//history.incMobilityWrite(file.getCriteria(),evicted);
+			
+			missInsert++;
 		}
 		
 		//-2:Cache:Missed!, with eviction and insertion
-		//0:Cache:Missed!
-		if(result==0||result==-2){       
+		if(result==-2){    
+			history.incTotalMiss();
+			
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
-			history.incTotalMiss();
-			history.addWrites(evicted);
-			history.incIdvWrite(file.getCriteria(),evicted);
+			//history.incMobilityInsert(file.getCriteria(),1);
 			
-			history.incMobilityInsert(file.getCriteria(),1);
-			history.incMobilityWrite(file.getCriteria(),evicted);
+			history.addWrites(evicted);
+			history.incIdvWrite(file.getCriteria(),evicted);			
+			//history.incMobilityWrite(file.getCriteria(),evicted);
+			
+			missInsertEvict=missInsertEvict+evicted;
+			totalEvicts=totalEvicts+evicted;
 		}
 		
 		
 		//Cache:Missed!, No insertion
 		if(result==-1){    
 			history.incTotalMiss();
+		
 			history.addWrites(1);
-			history.incIdvWrite(file.getCriteria(),1);
+			history.incIdvWrite(file.getCriteria(),1);			
+			//history.incMobilityWrite(file.getCriteria(),1);
 			
-			history.incMobilityWrite(file.getCriteria(),1);
-		}
-		
-		int c=file.getCriteria();
-		
-		if(result==0){
+			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
+			//history.incMobilityInsert(file.getCriteria(),1);
+			
 			missInsert++;
-			if(c==0||c==2){
-				missInsertH++;
-			}else if(c==1||c==3){
-				missInsertL++;
-			}
-		}else if(result==-1){
-			missNoInsert++;
-			if(c==0||c==2){
-				missNoInsertH++;
-			}else if(c==1||c==3){
-				missNoInsertL++;
-			}
-		}else if(result==-2){
-			missInsertEvict++;
-			if(c==0||c==2){
-				missInsertEvictH++;
-			}else if(c==1||c==3){
-				missInsertEvictL++;
-			}
-			
-			totalEvicts=totalEvicts+evicted;
 		}
 		
 		
-	
+		
+		
+//		int c=file.getCriteria();	
+//		if(result==0){
+//			missInsert++;
+//			if(c==0||c==2){
+//				missInsertH++;
+//			}else if(c==1||c==3){
+//				missInsertL++;
+//			}
+//		}
+//		else if(result==-1){
+//			missNoInsert++;
+//			if(c==0||c==2){
+//				missNoInsertH++;
+//			}else if(c==1||c==3){
+//				missNoInsertL++;
+//			}
+//		}
+//		else if(result==-2){
+//			missInsertEvict=missInsertEvict+evicted;
+//			if(c==0||c==2){
+//				missInsertEvictH++;
+//			}else if(c==1||c==3){
+//				missInsertEvictL++;
+//			}			
+//			totalEvicts=totalEvicts+evicted;
+//		}
+		
+		
+		if(RAM0.getFreeSpace()<=0)
 		System.out.println(time+" "+history+
-				" 		HP:"+history.HPH/history.HP+
-				" 		LP:"+history.LPH/history.LP+
-				" 		HB:"+history.HBH/history.HB+
-				" 		LB:"+history.LBH/history.LB+
-				"		HMH=:"+history.HMH/history.getTotalRequest()+
-				"		LMH=:"+history.LMH/history.getTotalRequest()+		
-				" 		"+history.HPW+
-				" 		"+history.LPW+
-				" 		"+history.HBW+
-				" 		"+history.LBW
+				" 		L1:"+history.L1H/history.L1+
+				" 		L2:"+history.L2H/history.L2+
+				" 		L3:"+history.L3H/history.L3+
+				" 		L4:"+history.L4H/history.L4+
+//				"		HMH=:"+history.HMH/history.getTotalRequest()+
+//				"		LMH=:"+history.LMH/history.getTotalRequest()+		
+				" 		"+history.L1W+
+				" 		"+history.L2W+
+				" 		"+history.L3W+
+				" 		"+history.L4W
 				);	 
 		
-
+		if(RAM0.getFreeSpace()<=0)
 		outputWriter.write(time+
 //				"	BHR:"+history.getBHR()+
 //				"   BIR:"+history.getBIR()+
@@ -336,10 +364,6 @@ public class myDatacenterEXO extends Datacenter{
 //				" 	"+history.HBH/history.HB+
 //				" 	"+history.LBH/history.LB+
 //				"   "+history.getWrites()+				
-//				" 	"+history.HPW+
-//				" 	"+history.LPW+
-//				" 	"+history.HBW+
-//				" 	"+history.LBW+
 //				"   "+history.getNumInsert()+
 //				" 	"+history.HPI+
 //				" 	"+history.LPI+
@@ -356,17 +380,22 @@ public class myDatacenterEXO extends Datacenter{
 //				" 	"+history.LMW+
 //				" 	"+history.HMI+
 //				" 	"+history.LMI+
-//				" 	"+missInsert+
+				" 	"+missInsert+
 //				" 	"+missNoInsert+
-//				" 	"+missInsertEvict+
-//				" 	"+totalEvicts+
-				" 	"+missInsertH+
-				" 	"+missInsertL+
-				" 	"+missNoInsertH+
-				" 	"+missNoInsertL+
-				" 	"+missInsertEvictH+
-				" 	"+missInsertEvictL+
+				" 	"+missInsertEvict+
 				" 	"+totalEvicts+
+				" 	"+history.L1W+
+				" 	"+history.L2W+
+				" 	"+history.L3W+
+				" 	"+history.L4W+
+				" 	"+history.writes+
+				
+//				" 	"+missInsertH+
+//				" 	"+missInsertL+
+//				" 	"+missNoInsertH+
+//				" 	"+missNoInsertL+
+//				" 	"+missInsertEvictH+
+//				" 	"+missInsertEvictL+
 				"\n");	
 
 		
@@ -399,8 +428,7 @@ public class myDatacenterEXO extends Datacenter{
 //		used= HD0.getCurrentSize();
 //		capacity= HD0.getCapacity();
 		
-		
-		
+		evicted=0;		
 		used=RAM0.getUsed();
 		capacity=RAM0.getSize();
 		
@@ -415,7 +443,7 @@ public class myDatacenterEXO extends Datacenter{
 		if(file.getSize()+used<=capacity){
 			used=used+file.getSize();
 			insert(file);
-			HD0.addFile(file);
+			//HD0.addFile(file);
 			RAM0.addFile(file);
 			evicted=0;
 			return 0;
@@ -425,7 +453,6 @@ public class myDatacenterEXO extends Datacenter{
 		freespace=capacity-used;
 					
 		for(UE_Context x : CacheState) {
-
 			if(sumWeight+x.getWeight()<file.getWeight()){
 				 sumWeight = sumWeight + x.getWeight();
 				 freespace = freespace + x.getSize();
@@ -439,6 +466,9 @@ public class myDatacenterEXO extends Datacenter{
 							
 		if(freespace<file.getSize()){
 			//System.out.println("Cache:Missed!, No insertion");
+			UE_Context x=CacheState.get(0);
+			RAM0.removeFile(x);
+			remove(x);
 			return -1;
 		}
 					
@@ -450,7 +480,7 @@ public class myDatacenterEXO extends Datacenter{
 		
 		//remove from Cache
 		for(UE_Context e: Evict){
-			HD0.deleteFile(e);
+			//HD0.deleteFile(e);
 			RAM0.removeFile(e);
 			//System.out.println("evict Harddrive..."+ e.getName());						
 		}	
@@ -458,7 +488,7 @@ public class myDatacenterEXO extends Datacenter{
 		evicted=Evict.size();
 		Evict.clear();
 		insert(file);
-		HD0.addFile(file);
+		//HD0.addFile(file);
 		RAM0.addFile(file);
 		return -2;
 	}
@@ -483,11 +513,11 @@ public class myDatacenterEXO extends Datacenter{
 			file.setProbility(1);
 		}
 																				
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1+getAHPWeight(file));
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
+		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
 					
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
 		
 		
 		file.setEXOTime(timeNow);	
