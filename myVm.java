@@ -24,7 +24,7 @@ import org.cloudbus.cloudsim.Vm;
  */
 public class myVm extends Vm {
 
-	private VRAM vram;
+	private VRAM2 vram;
 	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
@@ -65,7 +65,7 @@ public class myVm extends Vm {
 			String vmm,
 			CloudletScheduler cloudletScheduler){
 		super(id,userId, mips, ram, ram, size, size, vmm, cloudletScheduler);
-		setVram(new VRAM(ram,id));
+		setVram(new VRAM2(ram,id));
 		setId(id);
 		setUserId(userId);
 		setUid(getUid(userId, id));
@@ -89,12 +89,12 @@ public class myVm extends Vm {
 	}
 
 
-	public VRAM getVram() {
+	public VRAM2 getVram() {
 		return vram;
 	}
 
 
-	public void setVram(VRAM vram) {
+	public void setVram(VRAM2 vram) {
 		this.vram = vram;
 	}
 	

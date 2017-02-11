@@ -2,6 +2,7 @@ package CS218Project;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.DatacenterBroker;
@@ -12,9 +13,9 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.lists.VmList;
 
 public class myDatacenterBroker extends DatacenterBroker {
-	private Distribution distr = null;
-
-	
+	private double time;
+	private Distribution distr =null;
+	private int counter=0;
 	public myDatacenterBroker(String name, double lambda) throws Exception {
 		super(name);	
 		distr = new Distribution(lambda,1);
@@ -50,7 +51,11 @@ public class myDatacenterBroker extends DatacenterBroker {
 			}
 			
 			cloudlet.setVmId(vm.getId());
-			send(getVmsToDatacentersMap().get(vm.getId()), distr.nextTime(), CloudSimTags.CLOUDLET_SUBMIT, myCloudlet);
+			
+			
+
+			time=distr.nextTime()+time;
+			send(getVmsToDatacentersMap().get(vm.getId()), time, CloudSimTags.CLOUDLET_SUBMIT, myCloudlet);
 			cloudletsSubmitted++;
 			vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
 			getCloudletSubmittedList().add(cloudlet);

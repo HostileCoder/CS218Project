@@ -11,8 +11,8 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	private double ratio=0.0;
 	private double missCost=0.0;
 	private int criteria;
-	private double EXOTime = 0.0;
-	private double EXOScore = 0.0;
+	private double EXDTime = 0.0;
+	private double EXDScore = 0.0;
 	private int accessNum=0;
 	
 	public UE_Context(String fileName, int fileSize) throws ParameterException {
@@ -109,22 +109,22 @@ public class UE_Context extends File implements Comparable<UE_Context>{
 	}
 
 
-	public double getEXOTime() {
-		return EXOTime;
+	public double getEXDTime() {
+		return EXDTime;
 	}
 
 
-	public double getEXOScore() {
-		return EXOScore;
+	public double getEXDScore() {
+		return EXDScore;
 	}
 
-	public void setEXOTime(double EXOTime) {
-		this.EXOTime=EXOTime;
+	public void setEXDTime(double EXDTime) {
+		this.EXDTime=EXDTime;
 	}
 
 
-	public void setEXOScore(double EXOScore) {
-		this.EXOScore=EXOScore;
+	public void setEXDScore(double EXDScore) {
+		this.EXDScore=EXDScore;
 	}
 
 

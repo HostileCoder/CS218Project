@@ -21,10 +21,10 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 
-public class myDatacenterEXO extends Datacenter{
+public class myDatacenter extends Datacenter{
 
 	private HarddriveStorage HD0 = null;
-	private VRAM RAM0=null;
+	private VRAM2 RAM0=null;
 	private ArrayList <UE_Context> Evict=new ArrayList <UE_Context>();
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
 	private AHP ahp =new AHP(4);
@@ -55,12 +55,16 @@ public class myDatacenterEXO extends Datacenter{
 	private RamProvisioner ramProvisioner=null;
 	
 	private int missInsert=0;
-	private int missNoInsert=0;
+	private int missForceInsert=0;
 	private int missInsertEvict=0;
 	private ArrayList <History> records = new ArrayList<History>();
 	
+	private int printing=1;
 	
-	public myDatacenterEXO(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
+	private String method="l";
+	
+	
+	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		// TODO Auto-generated constructor stub	
@@ -73,10 +77,7 @@ public class myDatacenterEXO extends Datacenter{
 		ahp.setWeight(1,3,5);
 		ahp.setWeight(2,3,5);
 		ahp.findWeight();
-
-//		host0= this.getHostList().get(0);
-//		vmlist=host0.getVmList();
-		
+				
 	}
 	
 	@Override
@@ -259,7 +260,6 @@ public class myDatacenterEXO extends Datacenter{
 		//Cache:Hit!
 		if(result==1){
 			history.incTotalHit();				
-			//history.incMobilityHit(file.getCriteria(), 1);
 		}
 		
 
@@ -269,12 +269,10 @@ public class myDatacenterEXO extends Datacenter{
 			
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
-			//history.incMobilityInsert(file.getCriteria(),1);
-			
+
 			history.addWrites(1);
 			history.incIdvWrite(file.getCriteria(),1);			
-			//history.incMobilityWrite(file.getCriteria(),evicted);
-			
+	
 			missInsert++;
 		}
 		
@@ -284,12 +282,10 @@ public class myDatacenterEXO extends Datacenter{
 			
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
-			//history.incMobilityInsert(file.getCriteria(),1);
-			
+
 			history.addWrites(evicted);
 			history.incIdvWrite(file.getCriteria(),evicted);			
-			//history.incMobilityWrite(file.getCriteria(),evicted);
-			
+
 			missInsertEvict=missInsertEvict+evicted;
 			totalEvicts=totalEvicts+evicted;
 		}
@@ -301,54 +297,21 @@ public class myDatacenterEXO extends Datacenter{
 		
 			history.addWrites(1);
 			history.incIdvWrite(file.getCriteria(),1);			
-			//history.incMobilityWrite(file.getCriteria(),1);
-			
+		
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
-			//history.incMobilityInsert(file.getCriteria(),1);
 			
-			missInsert++;
+			missForceInsert++;
 		}
 		
 		
 		
-		
-//		int c=file.getCriteria();	
-//		if(result==0){
-//			missInsert++;
-//			if(c==0||c==2){
-//				missInsertH++;
-//			}else if(c==1||c==3){
-//				missInsertL++;
-//			}
-//		}
-//		else if(result==-1){
-//			missNoInsert++;
-//			if(c==0||c==2){
-//				missNoInsertH++;
-//			}else if(c==1||c==3){
-//				missNoInsertL++;
-//			}
-//		}
-//		else if(result==-2){
-//			missInsertEvict=missInsertEvict+evicted;
-//			if(c==0||c==2){
-//				missInsertEvictH++;
-//			}else if(c==1||c==3){
-//				missInsertEvictL++;
-//			}			
-//			totalEvicts=totalEvicts+evicted;
-//		}
-		
-		
-		if(RAM0.getFreeSpace()<=0)
+		if(RAM0.getFreeSpace()<=0&&printing==1)
 		System.out.println(time+" "+history+
 				" 		L1:"+history.L1H/history.L1+
 				" 		L2:"+history.L2H/history.L2+
 				" 		L3:"+history.L3H/history.L3+
-				" 		L4:"+history.L4H/history.L4+
-//				"		HMH=:"+history.HMH/history.getTotalRequest()+
-//				"		LMH=:"+history.LMH/history.getTotalRequest()+		
+				" 		L4:"+history.L4H/history.L4+	
 				" 		"+history.L1W+
 				" 		"+history.L2W+
 				" 		"+history.L3W+
@@ -357,45 +320,15 @@ public class myDatacenterEXO extends Datacenter{
 		
 		if(RAM0.getFreeSpace()<=0)
 		outputWriter.write(time+
-//				"	BHR:"+history.getBHR()+
-//				"   BIR:"+history.getBIR()+
-//				" 	"+history.HPH/history.HP+
-//				" 	"+history.LPH/history.LP+
-//				" 	"+history.HBH/history.HB+
-//				" 	"+history.LBH/history.LB+
-//				"   "+history.getWrites()+				
-//				"   "+history.getNumInsert()+
-//				" 	"+history.HPI+
-//				" 	"+history.LPI+
-//				" 	"+history.HBI+
-//				" 	"+history.LBI+
-//				"   "+history.getTotalHit()+	
-//				" 	"+history.HPH+
-//				" 	"+history.LPH+
-//				" 	"+history.HBH+
-//				" 	"+history.LBH+
-//				" 	"+history.HMH+
-//				" 	"+history.LMH+
-//				" 	"+history.HMW+
-//				" 	"+history.LMW+
-//				" 	"+history.HMI+
-//				" 	"+history.LMI+
 				" 	"+missInsert+
-//				" 	"+missNoInsert+
+				" 	"+missForceInsert+
 				" 	"+missInsertEvict+
 				" 	"+totalEvicts+
-				" 	"+history.L1W+
-				" 	"+history.L2W+
-				" 	"+history.L3W+
-				" 	"+history.L4W+
 				" 	"+history.writes+
-				
-//				" 	"+missInsertH+
-//				" 	"+missInsertL+
-//				" 	"+missNoInsertH+
-//				" 	"+missNoInsertL+
-//				" 	"+missInsertEvictH+
-//				" 	"+missInsertEvictL+
+				" 	"+history.L1H/history.L1+
+				" 	"+history.L2H/history.L2+
+				" 	"+history.L3H/history.L3+
+				" 	"+history.L4H/history.L4+	
 				"\n");	
 
 		
@@ -432,9 +365,18 @@ public class myDatacenterEXO extends Datacenter{
 		used=RAM0.getUsed();
 		capacity=RAM0.getSize();
 		
-		//System.out.println("Used:"+used+" Capacity:"+capacity);	---------------------------------------------------------------------------			
-		findEXOWeight(file.getEXOScore(),ratio.getRatio(),time,file.getEXOTime());
-		//findLFUWeight();
+		//System.out.println("Used:"+used+" Capacity:"+capacity);			
+		
+		if(method.equals("e")){
+			findEXDWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
+		}else if(method.equals("a")||method.equals("a1")){
+			findEXDAHPWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
+		}else if(method.equals("l")){
+			findLFUWeight();
+		}else{
+			findLFUWeight();
+		}
+		
 		
 		if(CacheState.contains(file)){
 			return 1;
@@ -443,7 +385,6 @@ public class myDatacenterEXO extends Datacenter{
 		if(file.getSize()+used<=capacity){
 			used=used+file.getSize();
 			insert(file);
-			//HD0.addFile(file);
 			RAM0.addFile(file);
 			evicted=0;
 			return 0;
@@ -469,60 +410,84 @@ public class myDatacenterEXO extends Datacenter{
 			UE_Context x=CacheState.get(0);
 			RAM0.removeFile(x);
 			remove(x);
+			RAM0.addFile(file);
+			insert(file);
 			return -1;
 		}
 					
 		//remove from CachedState
 		for(UE_Context u: Evict){
-			remove(u);
-			//System.out.println("evict cachedstate..."+ u.getName());											
+			remove(u);							
 		}	
 		
 		//remove from Cache
 		for(UE_Context e: Evict){
-			//HD0.deleteFile(e);
-			RAM0.removeFile(e);
-			//System.out.println("evict Harddrive..."+ e.getName());						
+			RAM0.removeFile(e);				
 		}	
 		
 		evicted=Evict.size();
 		Evict.clear();
 		insert(file);
-		//HD0.addFile(file);
 		RAM0.addFile(file);
 		return -2;
 	}
 	
 	
 		
-	public void findEXOWeight(double lastScore,double a, double timeNow, double lastAccess){
+	public void findEXDWeight(double lastScore,double a, double timeNow, double lastAccess){
 		double time = timeNow-lastAccess;	
 		//System.out.println(time);
 		
 		for(UE_Context u: CacheState){
 			if(!u.equals(file)){
-				u.setProbility(u.getEXOScore()*Math.pow(Math.E, -a*(timeNow-u.getEXOTime()))); 
+				u.setProbility(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
 				//System.out.println(u.getProbility());
 			}
 		}
 		file.incAccessNum();	
 		
 		if(file.getAccessNum()==1){			
-			file.setEXOScore(1);
-			file.setEXOTime(timeNow);	
+			file.setEXDScore(1);
+			file.setEXDTime(timeNow);	
 			file.setProbility(1);
 		}
-																				
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
-		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
-					
-//		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-//		file.setEXOScore(lastScore*Math.pow(Math.E, -a*time)+1);
-		
-		
-		file.setEXOTime(timeNow);	
+																									
+		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
+		file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+1);
+				
+		file.setEXDTime(timeNow);	
 	}
 	
+	
+	
+	public void findEXDAHPWeight(double lastScore,double a, double timeNow, double lastAccess){
+		double time = timeNow-lastAccess;	
+		//System.out.println(time);
+		
+		for(UE_Context u: CacheState){
+			if(!u.equals(file)){
+				u.setProbility(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
+				//System.out.println(u.getProbility());
+			}
+		}
+		file.incAccessNum();	
+		
+		if(file.getAccessNum()==1){			
+			file.setEXDScore(1);
+			file.setEXDTime(timeNow);	
+			file.setProbility(1);
+		}
+			
+		if(method.equals("a")){
+			file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
+			file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
+		}else if(method.equals("a1")){
+			file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file)+1);
+			file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file)+1);
+		}
+
+		file.setEXDTime(timeNow);	
+	}
 	
 	
 	public void findLFUWeight(){

@@ -13,16 +13,21 @@ import java.util.List;
 import java.util.Random;
 
 
-public class CS218ProjectEXO {
+public class CS298Project {
 	private static List<Cloudlet> cloudletList;
 	/** The vmlist. */
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=1000;
-    private static int sizeHD=500;
+    private static int sizeRam=500;
     private static double lambda=10;
-    private static int sizeReq=20000;
+    private static int numReq=20000;
+    private static int fileSize=1;
     private static double SLARatio=0.0666;
+    
+    private static int numVM=1;
+    private static int numHost=1;
+    
 	/**
 	 * Creates main() to run this example.
 	 *
@@ -62,10 +67,10 @@ public class CS218ProjectEXO {
 			// Second step: Create Datacenters
 			// Datacenters are the resource providers in CloudSim. We need at
 			// list one of them to run a CloudSim simulation
-			myDatacenterEXO datacenter0 = createDatacenter("Datacenter_0");
+			myDatacenter datacenter0 = createDatacenter("Datacenter_0");
 
 			// Third step: Create Broker
-			myDatacenterBrokerEXO broker = createBroker(lambda);
+			myDatacenterBroker broker = createBroker(lambda);
 			int brokerId = broker.getId();
 
 			// Fourth step: Create one virtual machine
@@ -75,16 +80,19 @@ public class CS218ProjectEXO {
 			int vmid = 0;
 			int mips = 1000;
 			long size = 10000; // image size (MB)
-			int ram = sizeHD; // vm memory (MB)
+			int ram = sizeRam; // vm memory (MB)
 			long bw = 1000;
 			int pesNumber = 1; // number of cpus
 			String vmm = "Xen"; // VMM name
-
-			// create VM
-			Vm vm = new myVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerSpaceShared());
 			
-			// add the VM to the vmList
-			vmlist.add(vm);
+			Vm vm =null;
+			for(int i=0;i<numVM;i++){
+				// create VM
+				vm = new myVm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());				
+				// add the VM to the vmList
+				vmlist.add(vm);
+				vmid++;
+			}
 
 			// submit vm list to the broker
 			broker.submitVmList(vmlist);
@@ -116,13 +124,11 @@ public class CS218ProjectEXO {
 				}else if(c==3){
 					l4.add(u);
 				}
-			}
+			}	
 			
-			
+			vmid=0;
 			Random rn=new Random(); 
-			int x=sizeReq;
-		
-		
+			int x=numReq;		
 			while(x!=0){
 				//System.out.println(m.size()+" "+s.size());
 				double d = Math.random();
@@ -132,24 +138,35 @@ public class CS218ProjectEXO {
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
+					
+	            	//bind the cloudlets to the vms. This way, the broker
+	            	// will submit the bound cloudlets only to the specific VM
+	            	//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
+				
 				}else if(d <= SLARatio*2){
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}else if(d <= SLARatio*4){
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}else {
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}
 				x--;
 				id++;
@@ -189,7 +206,7 @@ public class CS218ProjectEXO {
 			int max=3;
 			int min=0;
 			int ran= rn.nextInt(max - min + 1) + min;
-			UE_Context u =new UE_Context(Integer.toString(i),1,0.0,1,ran);
+			UE_Context u =new UE_Context(Integer.toString(i),fileSize,0.0,1,ran);
 			UE.add(u);
 			
 			oz=new Random(); 
@@ -198,26 +215,7 @@ public class CS218ProjectEXO {
 				Harddrive.addFile(u);
 			}
 		}
-		
-		
-		
-//		for(int i=0;i<800;i++){
-//			int x=oz.nextInt(1);
-//			if(x==1){
-//				UE.get(i).setCriteria(0);
-//			}else
-//				UE.get(i).setCriteria(2);
-//			
-//		}
-//		
-//		for(int i=800;i<1000;i++){
-//			int x=oz.nextInt(1);
-//			if(x==1){
-//				UE.get(i).setCriteria(1);
-//			}else
-//				UE.get(i).setCriteria(3);
-//		}
-		
+
 		return UE;
 	}
 	
@@ -231,40 +229,45 @@ public class CS218ProjectEXO {
 	 * @return the datacenter
 	 * @throws ParameterException 
 	 */
-	private static myDatacenterEXO createDatacenter(String name) throws ParameterException {
+	private static myDatacenter createDatacenter(String name) throws ParameterException {
 
 		// Here are the steps needed to create a PowerDatacenter:
 		// 1. We need to create a list to store
 		// our machine
 		List<Host> hostList = new ArrayList<Host>();
-
-		// 2. A Machine contains one or more PEs or CPUs/Cores.
-		// In this example, it will have only one core.
-		List<Pe> peList = new ArrayList<Pe>();
-
-		int mips = 1000;
-
-		// 3. Create PEs and add these into a list.
-		peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
-
-		// 4. Create Host with its id and list of PEs and add them to the list
-		// of machines
+		
 		int hostId = 0;
-		int ram = 3000*10; // host memory (MB)
-		long storage = 1000000; // host storage
-		int bw = 10000;
-
-		hostList.add(
-			new Host(
-				hostId,
-				new RamProvisionerSimple(ram),
-				new BwProvisionerSimple(bw),
-				storage,
-				peList,
-				new VmSchedulerTimeShared(peList)
-			)
-		); // This is our machine
-
+		for(int i=0;i<numHost;i++){		
+				
+			    int mips = 10000;				
+				// 2. A Machine contains one or more PEs or CPUs/Cores.
+				// In this example, it will have only one core.
+				List<Pe> peList = new ArrayList<Pe>();
+		
+				// 3. Create PEs and add these into a list.
+				peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
+		
+				// 4. Create Host with its id and list of PEs and add them to the list
+				// of machines
+				//int hostId = 0;
+				int ram = 20000*1000; // host memory (MB)
+				long storage = 1000000; // host storage
+				int bw = 20000;
+		
+				hostList.add(
+					new Host(
+						hostId,
+						new RamProvisionerSimple(ram),
+						new BwProvisionerSimple(bw),
+						storage,
+						peList,
+						new VmSchedulerTimeShared(peList)
+					)
+				); // This is our machine	
+				hostId++;
+		}
+		
+		
 		// 5. Create a DatacenterCharacteristics object that stores the
 		// properties of a data center: architecture, OS, list of
 		// Machines, allocation policy: time- or space-shared, time zone
@@ -281,7 +284,7 @@ public class CS218ProjectEXO {
 		LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
 													// devices by now
 	
-		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeHD);
+		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeRam);
 		storageList.add(hd);
 		fillhardrive(hd);
 
@@ -290,9 +293,9 @@ public class CS218ProjectEXO {
 				costPerStorage, costPerBw);
 
 		// 6. Finally, we need to create a PowerDatacenter object.
-		myDatacenterEXO datacenter = null;
+		myDatacenter datacenter = null;
 		try {
-			datacenter = new myDatacenterEXO(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+			datacenter = new myDatacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -308,10 +311,10 @@ public class CS218ProjectEXO {
 	 *
 	 * @return the datacenter broker
 	 */
-	private static myDatacenterBrokerEXO createBroker(double lambda) {
-		myDatacenterBrokerEXO broker = null;
+	private static myDatacenterBroker createBroker(double lambda) {
+		myDatacenterBroker broker = null;
 		try {
-			broker = new myDatacenterBrokerEXO("Broker", lambda);
+			broker = new myDatacenterBroker("Broker", lambda);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

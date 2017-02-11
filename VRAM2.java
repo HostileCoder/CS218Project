@@ -4,66 +4,53 @@ import java.util.ArrayList;
 
 import org.cloudbus.cloudsim.File;
 
-public class VRAM {
+public class VRAM2 {
 	private int RamID=0;
 	private int RamSize=0;
 	private int freeSpace=0;
 	private int used=0;
 	private int index=0;
-	public ArrayList<File> ram= new ArrayList<File>();
+	public ArrayList<File> fileList= new ArrayList<File>();
 	
-	public VRAM(int size, int RamID){
+	public VRAM2(int size, int RamID){
 		this.setRamID(RamID);
 		this.setSize(size);
 		setFreeSpace(size);		
-		for(int i=0;i<size;i++){
-			ram.add(null);
-		}
-		index=0;
 	}
 	
 	public void addSpace(int s){
-		for(int i=0;i<s;i++){
-			ram.add(null);
-		}
 		freeSpace=freeSpace+s;
 		RamSize=RamSize+s;
 	}
 	
-	public void removeSpace(int s){
-		for(int i=0;i<s;i++){
-			File f= ram.get(ram.size()-1);
-			if(f==null){
-				freeSpace--;
-			}else{
-				used--;
-			}
-			RamSize--;
-			ram.remove(ram.size()-1);
+	public void removeSpace(int s){		
+		if(freeSpace-s<0){
+			//future
 		}
-		index = findfirstNull();
+		freeSpace=freeSpace-s;
+		RamSize=RamSize-s;
 	}
 	
 	public void addFile(File file){		
 		if(freeSpace==0){
 			return;
-		}		
-		ram.set(index, file);
-		index = findfirstNull();
-		used++;
+		}
+		if(RamSize-used+file.getSize()<0){
+			return;
+		}
+		fileList.add(file);		
+		used=used+file.getSize();
 		freeSpace=RamSize-used;
 	}
 	
 	
 	public void removeFile(File file){
-		if(ram.contains(file)){
-			ram.remove(ram.indexOf(file));
-			ram.add(null);
+		if( fileList.contains(file)){
+			fileList.remove( fileList.indexOf(file));
 		}else{
 			return;
 		}
-		used--;
-		index= findfirstNull();
+		used=used-file.getSize();
 		freeSpace=RamSize-used;
 	}
 	
@@ -101,23 +88,18 @@ public class VRAM {
 	}
 	
 	public String toString(){
-		return "ID "+RamID+" RamSize "+RamSize+" freeSpace "+freeSpace+" used "+used+" index "+index;	
+		return "ID:"+RamID+
+				" RamSize:"+RamSize+
+				" freeSpace:"+freeSpace+
+				" used:"+used;	
 	}
 	
 	public void printContent(){
 		int i=0;
-		for(File f:ram){
+		for(File f: fileList){
 			System.out.println(i+1+" "+f);
 			i++;
 		}
 	}
 	
-	public int findfirstNull(){
-		for(int i=0;i<RamSize;i++){
-			if(ram.get(i)==null){
-				return i;
-			}
-		}
-		return RamSize;
-	}
 }
