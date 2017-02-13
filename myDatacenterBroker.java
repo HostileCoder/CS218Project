@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
+import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.lists.VmList;
 
 public class myDatacenterBroker extends DatacenterBroker {
@@ -64,6 +65,33 @@ public class myDatacenterBroker extends DatacenterBroker {
 
 		// remove submitted cloudlets from waiting list
 		getCloudletList().removeAll(successfullySubmitted);
+	}
+	
+	
+	protected void processCloudletReturn(SimEvent ev) {
+		Cloudlet cloudlet = (Cloudlet) ev.getData();
+		getCloudletReceivedList().add(cloudlet);
+		Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Cloudlet ", cloudlet.getCloudletId(),
+				" received");
+		cloudletsSubmitted--;
+		if (getCloudletList().size() == 0 && cloudletsSubmitted == 0) { // all cloudlets executed
+			Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": All Cloudlets executed. Finishing...");
+			
+			//Vm vm = getVmsCreatedList().get(0);
+			//System.out.println(vm.getCurrentRequestedTotalMips());
+			
+			
+			clearDatacenters();
+			finishExecution();
+		} else { // some cloudlets haven't finished yet
+			if (getCloudletList().size() > 0 && cloudletsSubmitted == 0) {
+				// all the cloudlets sent finished. It means that some bount
+				// cloudlet is waiting its VM be created
+				clearDatacenters();
+				createVmsInDatacenter(0);
+			}
+
+		}
 	}
 
 }

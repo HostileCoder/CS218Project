@@ -21,12 +21,12 @@ public class CS298Project {
     private static int sizeUE=1000;
     private static int sizeRam=500;
     private static double lambda=10;
-    private static int numReq=20000;
+    private static int numReq=1;
     private static int fileSize=1;
     private static double SLARatio=0.0666;
     
-    private static int numVM=1;
-    private static int numHost=1;
+    private static int numVM=16;
+    private static int numHost=4;
     
 	/**
 	 * Creates main() to run this example.
@@ -36,7 +36,7 @@ public class CS298Project {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Log.printLine("Starting Project298...");
-		Log.disable();
+		//Log.disable();
 		try {
 			// First step: Initialize the CloudSim package. It should be called before creating any entities.
 			int num_user = 1; // number of cloud users
@@ -239,7 +239,7 @@ public class CS298Project {
 		int hostId = 0;
 		for(int i=0;i<numHost;i++){		
 				
-			    int mips = 10000;				
+			    int mips = 4000;				
 				// 2. A Machine contains one or more PEs or CPUs/Cores.
 				// In this example, it will have only one core.
 				List<Pe> peList = new ArrayList<Pe>();

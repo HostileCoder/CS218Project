@@ -59,9 +59,9 @@ public class myDatacenter extends Datacenter{
 	private int missInsertEvict=0;
 	private ArrayList <History> records = new ArrayList<History>();
 	
-	private int printing=1;
+	private int printing=0;
 	
-	private String method="l";
+	private String method="a";
 	
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -246,16 +246,6 @@ public class myDatacenter extends Datacenter{
 		history.incTotalRequest();		
 		history.incIdvHit(file.getCriteria(),result);
 				
-		if(result==0){
-			//Log.printLine("Cache:Missed!");
-		}else if(result==1){
-			//Log.printLine("Cache:Hit!");
-		}else if(result==-1){
-			//System.out.println("Cache:Missed!, No insertion");
-		}else if(result==-2){
-			//System.out.println("Cache:Missed!, with eviction and insertion"+" "+evicted);
-		}
-		
 		
 		//Cache:Hit!
 		if(result==1){
@@ -358,14 +348,11 @@ public class myDatacenter extends Datacenter{
 	
 
 	private int handleRequest(double time) {		
-//		used= HD0.getCurrentSize();
-//		capacity= HD0.getCapacity();
 		
 		evicted=0;		
 		used=RAM0.getUsed();
 		capacity=RAM0.getSize();
-		
-		//System.out.println("Used:"+used+" Capacity:"+capacity);			
+			
 		
 		if(method.equals("e")){
 			findEXDWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
