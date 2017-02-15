@@ -65,7 +65,7 @@ public class myDatacenter extends Datacenter{
 	
 	private int VMcounter=0;
 	private int printing=1;
-	private String method="a";
+	private String method="e";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
