@@ -24,7 +24,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisioner;
 public class myDatacenter extends Datacenter{
 
 	private HarddriveStorage HD0 = null;
-	private VRAM2 RAM0=null;
+	private VRAM2 RAM=null;
 	private ArrayList <UE_Context> Evict=new ArrayList <UE_Context>();
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
 	private AHP ahp =new AHP(4);
@@ -50,19 +50,23 @@ public class myDatacenter extends Datacenter{
 
 	
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
+	private PrintWriter outputWriter1 = new PrintWriter ("file1.txt");
+	private PrintWriter outputWriter2 = new PrintWriter ("file2.txt");
+	private PrintWriter outputWriter3 = new PrintWriter ("file3.txt");
+	
 	private List<myVm> vmlist = null;
-	private Host host0=null;
+	private Host host=null;
 	private RamProvisioner ramProvisioner=null;
 	
 	private int missInsert=0;
 	private int missForceInsert=0;
 	private int missInsertEvict=0;
-	private ArrayList <History> records = new ArrayList<History>();
 	
-	private int printing=0;
 	
+	private int VMcounter=0;
+	private int printing=1;
 	private String method="a";
-	
+
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval) throws Exception {
@@ -173,9 +177,9 @@ public class myDatacenter extends Datacenter{
 			case CloudSimTags.VM_CREATE_ACK:
 				processVmCreate(ev, true);
 				
-				host0= this.getHostList().get(0);
-				vmlist=host0.getVmList();		
-				ramProvisioner=host0.getRamProvisioner();
+//				host0= this.getHostList().get(0);
+//				vmlist=host0.getVmList();		
+//				ramProvisioner=host0.getRamProvisioner();
 				
 				break;
 
@@ -234,10 +238,10 @@ public class myDatacenter extends Datacenter{
 		
 		int UserId = cl.getUserId();
 		int VmId = cl.getVmId();
-		Host Host = getVmAllocationPolicy().getHost(VmId, UserId);
-		Vm VM = Host.getVm(VmId, UserId);
-		RAM0= ((myVm) VM).getVram();
-		history = ((myVm) VM).getHistory();
+		host = getVmAllocationPolicy().getHost(VmId, UserId);
+		Vm VM = host.getVm(VmId, UserId);
+		RAM= ((myVm) VM).getVram();
+		vmlist=host.getVmList();
 		CacheState = ((myVm) VM).getCacheState();
 		
 		
@@ -276,12 +280,13 @@ public class myDatacenter extends Datacenter{
 			history.addWrites(evicted);
 			history.incIdvWrite(file.getCriteria(),evicted);			
 
+			//System.out.println(evicted);
 			missInsertEvict=missInsertEvict+evicted;
 			totalEvicts=totalEvicts+evicted;
 		}
 		
 		
-		//Cache:Missed!, No insertion
+		//Cache:Missed!, force insertion
 		if(result==-1){    
 			history.incTotalMiss();
 		
@@ -295,8 +300,9 @@ public class myDatacenter extends Datacenter{
 		}
 		
 		
-		
-		if(RAM0.getFreeSpace()<=0&&printing==1)
+		//System.out.println(RAM.getFreeSpace());
+		//if(RAM.getFreeSpace()<=0&&printing==1)
+		if(printing==1)
 		System.out.println(time+" "+history+
 				" 		L1:"+history.L1H/history.L1+
 				" 		L2:"+history.L2H/history.L2+
@@ -308,7 +314,7 @@ public class myDatacenter extends Datacenter{
 				" 		"+history.L4W
 				);	 
 		
-		if(RAM0.getFreeSpace()<=0)
+		//if(RAM.getFreeSpace()<=0)
 		outputWriter.write(time+
 				" 	"+missInsert+
 				" 	"+missForceInsert+
@@ -320,7 +326,13 @@ public class myDatacenter extends Datacenter{
 				" 	"+history.L3H/history.L3+
 				" 	"+history.L4H/history.L4+	
 				"\n");	
+		outputWriter.flush();
 
+		if(printing==0)
+		System.out.println(vmlist.get(0).getVram().getFreeSpace()+
+				" "+vmlist.get(1).getVram().getFreeSpace()+
+				" "+vmlist.get(2).getVram().getFreeSpace()+
+				" "+vmlist.get(3).getVram().getFreeSpace());
 		
 		cl.setResourceParameter(
                 getId(), getCharacteristics().getCostPerSecond(), 
@@ -350,14 +362,12 @@ public class myDatacenter extends Datacenter{
 	private int handleRequest(double time) {		
 		
 		evicted=0;		
-		used=RAM0.getUsed();
-		capacity=RAM0.getSize();
+		used=RAM.getUsed();
+		capacity=RAM.getSize();
 			
 		
-		if(method.equals("e")){
+		if(method.equals("a")||method.equals("a1")||method.equals("e")){
 			findEXDWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
-		}else if(method.equals("a")||method.equals("a1")){
-			findEXDAHPWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
 		}else if(method.equals("l")){
 			findLFUWeight();
 		}else{
@@ -365,21 +375,34 @@ public class myDatacenter extends Datacenter{
 		}
 		
 		
-		if(CacheState.contains(file)){
-			return 1;
+		for(myVm x:vmlist){
+			if(x.getCacheState().contains(file)){
+				return 1;
+			}
 		}
+		
+//		if(CacheState.contains(file)){
+//			return 1;
+//		}
+		
+		
+		myVm v = getNextVM(host);
+		RAM=v.getVram();
+		used=RAM.getUsed();
+		capacity=RAM.getSize();
+		CacheState = v.getCacheState();
 		
 		if(file.getSize()+used<=capacity){
 			used=used+file.getSize();
 			insert(file);
-			RAM0.addFile(file);
+			RAM.addFile(file);
 			evicted=0;
 			return 0;
 		}
 					
 		sumWeight=0;
-		freespace=capacity-used;
-					
+		freespace=RAM.getFreeSpace();		
+
 		for(UE_Context x : CacheState) {
 			if(sumWeight+x.getWeight()<file.getWeight()){
 				 sumWeight = sumWeight + x.getWeight();
@@ -391,13 +414,15 @@ public class myDatacenter extends Datacenter{
 				 }						
 			}
 		}
-							
+		
+		//System.out.println(freespace+" "+file.getSize()+" "+Evict.size());//0000000000000000000000000000000000000000000000000000000000000000000000000000000					
+		
 		if(freespace<file.getSize()){
 			//System.out.println("Cache:Missed!, No insertion");
 			UE_Context x=CacheState.get(0);
-			RAM0.removeFile(x);
+			RAM.removeFile(x);
 			remove(x);
-			RAM0.addFile(file);
+			RAM.addFile(file);
 			insert(file);
 			return -1;
 		}
@@ -409,69 +434,53 @@ public class myDatacenter extends Datacenter{
 		
 		//remove from Cache
 		for(UE_Context e: Evict){
-			RAM0.removeFile(e);				
+			RAM.removeFile(e);				
 		}	
 		
 		evicted=Evict.size();
 		Evict.clear();
 		insert(file);
-		RAM0.addFile(file);
+		RAM.addFile(file);
 		return -2;
 	}
 	
-	
-		
+
 	public void findEXDWeight(double lastScore,double a, double timeNow, double lastAccess){
-		double time = timeNow-lastAccess;	
-		//System.out.println(time);
-		
-		for(UE_Context u: CacheState){
-			if(!u.equals(file)){
-				u.setProbility(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
-				//System.out.println(u.getProbility());
-			}
-		}
-		file.incAccessNum();	
-		
-		if(file.getAccessNum()==1){			
-			file.setEXDScore(1);
-			file.setEXDTime(timeNow);	
-			file.setProbility(1);
-		}
-																									
-		file.setProbility(lastScore*Math.pow(Math.E, -a*time)+1);
-		file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+1);
+		double deltatime = timeNow-lastAccess;	
+	
 				
-		file.setEXDTime(timeNow);	
-	}
-	
-	
-	
-	public void findEXDAHPWeight(double lastScore,double a, double timeNow, double lastAccess){
-		double time = timeNow-lastAccess;	
-		//System.out.println(time);
-		
-		for(UE_Context u: CacheState){
-			if(!u.equals(file)){
-				u.setProbility(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
-				//System.out.println(u.getProbility());
-			}
-		}
-		file.incAccessNum();	
-		
+		file.incAccessNum();		
 		if(file.getAccessNum()==1){			
 			file.setEXDScore(1);
 			file.setEXDTime(timeNow);	
 			file.setProbility(1);
+			return;
 		}
-			
+		
+		
+		for(UE_Context u: CacheState){
+			if(!u.equals(file)){
+				u.setProbility(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
+				//u.setEXDScore(u.getEXDScore()*Math.pow(Math.E, -a*(timeNow-u.getEXDTime()))); 
+				//System.out.println(u.getProbility());
+			}
+		}
+		Collections.sort(CacheState);
+		
 		if(method.equals("a")){
-			file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
-			file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file));
+			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file));
+			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file));
+			Collections.sort(CacheState);
 		}else if(method.equals("a1")){
-			file.setProbility(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file)+1);
-			file.setEXDScore(lastScore*Math.pow(Math.E, -a*time)+getAHPWeight(file)+1);
+			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file)+1);
+			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file)+1);
+			Collections.sort(CacheState);
+		}else if(method.equals("e")){
+			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+1);
+			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+1);
+			Collections.sort(CacheState);
 		}
+		
 
 		file.setEXDTime(timeNow);	
 	}
@@ -512,4 +521,10 @@ public class myDatacenter extends Datacenter{
 		return 1;	
 	}
 	
+	public myVm getNextVM(Host host){
+		int s=host.getVmList().size();
+		myVm x = vmlist.get(VMcounter%s);
+		VMcounter++;
+		return x;
+	}
 }

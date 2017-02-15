@@ -13,7 +13,7 @@ public class ZT {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		CloudSim.init(1, Calendar.getInstance(), false);
+//		CloudSim.init(1, Calendar.getInstance(), false);
 //		AHP ahp=new AHP(4);
 //		ahp.setWeight(0,1,5);
 //		ahp.setWeight(0,2,5);
@@ -56,22 +56,23 @@ public class ZT {
 //		System.out.println(x);
 //		//--------------------------
 		
-		VRAM2 y=new VRAM2(1000,0);
-		//ID:0 RamSize:1000 freeSpace:200 used:800 
-		for(int i=0;i<4;i++)
-			y.addFile(new File(Integer.toString(i), 200));
-		//ID:0 RamSize:1100 freeSpace:300 used:800 
-		y.addSpace(100);
-		//ID:0 RamSize:900 freeSpace:100 used:800 
-		y.removeSpace(200);
-		//ID:0 RamSize:900 freeSpace:300 used:600 
-		y.removeFile(y.fileList.get(0));
-		System.out.println(y);
-		y.printContent();
+//		VRAM2 y=new VRAM2(1000,0);
+//		//ID:0 RamSize:1000 freeSpace:200 used:800 
+//		for(int i=0;i<4;i++)
+//			y.addFile(new File(Integer.toString(i), 200));
+//		//ID:0 RamSize:1100 freeSpace:300 used:800 
+//		y.addSpace(100);
+//		//ID:0 RamSize:900 freeSpace:100 used:800 
+//		y.removeSpace(200);
+//		//ID:0 RamSize:900 freeSpace:300 used:600 
+//		y.removeFile(y.fileList.get(0));
+//		System.out.println(y);
+//		y.printContent();
 		
 		
-		
-		
+		Distribution x= new Distribution (1400,1);
+		for(int i=0;i<100;i++)
+			System.out.println(x.nextTime()+" "+Math.pow(10, 0));
 		
 	
 	}

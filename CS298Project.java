@@ -21,12 +21,12 @@ public class CS298Project {
     private static int sizeUE=1000;
     private static int sizeRam=500;
     private static double lambda=10;
-    private static int numReq=1;
-    private static int fileSize=1;
+    private static int numReq=20000;
+    private static int UEfileSize=1;
     private static double SLARatio=0.0666;
     
-    private static int numVM=16;
-    private static int numHost=4;
+    private static int numVM=1;
+    private static int numHost=1;
     
 	/**
 	 * Creates main() to run this example.
@@ -36,7 +36,7 @@ public class CS298Project {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Log.printLine("Starting Project298...");
-		//Log.disable();
+		Log.disable();
 		try {
 			// First step: Initialize the CloudSim package. It should be called before creating any entities.
 			int num_user = 1; // number of cloud users
@@ -126,17 +126,18 @@ public class CS298Project {
 				}
 			}	
 			
+			
 			vmid=0;
 			Random rn=new Random(); 
 			int x=numReq;		
 			while(x!=0){
-				//System.out.println(m.size()+" "+s.size());
+			
 				double d = Math.random();
 				if(d <= SLARatio){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
+					cloudlet.setVmId(vmid%numVM);
 					cloudletList.add(cloudlet);
 					
 	            	//bind the cloudlets to the vms. This way, the broker
@@ -147,7 +148,7 @@ public class CS298Project {
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
+					cloudlet.setVmId(vmid%numVM);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
@@ -155,7 +156,7 @@ public class CS298Project {
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
+					cloudlet.setVmId(vmid%numVM);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
@@ -163,13 +164,14 @@ public class CS298Project {
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
+					cloudlet.setVmId(vmid%numVM);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}
 				x--;
 				id++;
+				vmid++;
 			}
 			
 
@@ -206,7 +208,7 @@ public class CS298Project {
 			int max=3;
 			int min=0;
 			int ran= rn.nextInt(max - min + 1) + min;
-			UE_Context u =new UE_Context(Integer.toString(i),fileSize,0.0,1,ran);
+			UE_Context u =new UE_Context(Integer.toString(i),UEfileSize,0.0,1,ran);
 			UE.add(u);
 			
 			oz=new Random(); 
