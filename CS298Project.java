@@ -18,14 +18,14 @@ public class CS298Project {
 	/** The vmlist. */
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
-    private static int sizeUE=1000;
-    private static int sizeRam=500;
-    private static double lambda=10;
-    private static int numReq=20000;
-    private static int UEfileSize=1;
+    private static int sizeUE=25000;
+    private static int sizeRam=5000*200;
+    private static double lambda=1400;
+    private static int numReq= 84000;
+    private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
-    private static int numVM=1;
+    private static int numVM=4;
     private static int numHost=1;
     
 	/**
