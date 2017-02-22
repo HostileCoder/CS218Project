@@ -72,7 +72,7 @@ public class ZT {
 		
 		Distribution x= new Distribution (1400,1);
 		for(int i=0;i<100;i++)
-			System.out.println(x.nextTime()+" "+Math.pow(10, 0));
+			System.out.println(new Random().nextInt(4));
 		System.out.println(Math.pow(10, -3));
 	
 	}

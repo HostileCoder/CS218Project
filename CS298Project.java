@@ -19,7 +19,7 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=1250*200;
+    private static int sizeRam=2500*200;
     private static double lambda=1400;
     private static int numReq= 84000;
     private static int UEfileSize=200;
@@ -137,7 +137,7 @@ public class CS298Project {
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid%numVM);
+					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 					
 	            	//bind the cloudlets to the vms. This way, the broker
@@ -148,7 +148,7 @@ public class CS298Project {
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid%numVM);
+					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
@@ -156,7 +156,7 @@ public class CS298Project {
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid%numVM);
+					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
@@ -164,14 +164,15 @@ public class CS298Project {
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid%numVM);
+					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 					
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}
 				x--;
 				id++;
-				vmid++;
+				//vmid++;
+				vmid= new Random().nextInt(numVM);
 			}
 			
 
