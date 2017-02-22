@@ -1,6 +1,8 @@
 package CS218Project;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /*
  * Title: CloudSim Toolkit Description: CloudSim (Cloud Simulation) Toolkit for Modeling and
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 
 import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.Vm;
+
+
 
 /**
  * Represents a Virtual Machine (VM) that runs inside a Host, sharing a hostList with other VMs. It processes
@@ -31,6 +35,9 @@ public class myVm extends Vm {
 	private int reqRam=0;
 	private int spareRam=0;
 	private int userSize=0;
+	private int ramSpace=0;
+	private int numAccess=0;
+	
 	/**
 	 * Creates a new Vm object.
 	 * 
@@ -152,4 +159,57 @@ public class myVm extends Vm {
 	public void setSpareRam(int spareRam) {
 		this.spareRam = spareRam;
 	}
+
+
+	public int getRamSpace() {
+		ramSpace=vram.getFreeSpace();
+		return ramSpace;
+	}
+
+	public int getNumAccess() {
+		return numAccess;
+	}
+
+	public int incNumAccess() {
+		return numAccess=1+numAccess;
+	}
+	
+	
+	
+	public static void sortRamSpace(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				int x= o1.getRamSpace()-o2.getRamSpace();
+					if(x>0){
+						return -1;
+					}else if(x<0){
+						return 1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+	
+	public static void sortAccess(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				int x= o1.getNumAccess()-o2.getNumAccess();
+					if(x>0){
+						return 1;
+					}else if(x<0){
+						return -1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+
 }

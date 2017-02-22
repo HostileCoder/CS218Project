@@ -9,7 +9,7 @@ public class VRAM2 {
 	private int RamSize=0;
 	private int freeSpace=0;
 	private int used=0;
-	private int index=0;
+	
 	public ArrayList<File> fileList= new ArrayList<File>();
 	
 	public VRAM2(int size, int RamID){

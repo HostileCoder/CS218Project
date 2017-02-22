@@ -36,7 +36,7 @@ public class myDatacenter extends Datacenter{
 	private double freespace=0;
 	private double sumWeight=0;
 	private UE_Context file=null;
-	private Ratio ratio=new Ratio(Math.pow(10, -3));
+	private Ratio ratio=new Ratio(Math.pow(10, -3)*1);
 	private History history = new History(0,0,0,ratio.getRatio());
 	private int totalEvicts=0;
 
@@ -50,9 +50,9 @@ public class myDatacenter extends Datacenter{
 
 	
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
-	private PrintWriter outputWriter1 = new PrintWriter ("file1.txt");
-	private PrintWriter outputWriter2 = new PrintWriter ("file2.txt");
-	private PrintWriter outputWriter3 = new PrintWriter ("file3.txt");
+//	private PrintWriter outputWriter1 = new PrintWriter ("file1.txt");
+//	private PrintWriter outputWriter2 = new PrintWriter ("file2.txt");
+//	private PrintWriter outputWriter3 = new PrintWriter ("file3.txt");
 	
 	private List<myVm> vmlist = null;
 	private Host host=null;
@@ -65,7 +65,8 @@ public class myDatacenter extends Datacenter{
 	
 	private int VMcounter=0;
 	private int printing=1;
-	private String method="a";
+	private String methodScore="a";
+	private String methodLoad="a";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -98,10 +99,11 @@ public class myDatacenter extends Datacenter{
 		int UserId = cl.getUserId();
 		int VmId = cl.getVmId();
 		host = getVmAllocationPolicy().getHost(VmId, UserId);
+		vmlist=host.getVmList();
 		Vm VM = host.getVm(VmId, UserId);
 		RAM= ((myVm) VM).getVram();
-		vmlist=host.getVmList();
 		CacheState = ((myVm) VM).getCacheState();
+		((myVm) VM).incNumAccess();
 		
 		
 		file = cl.getUE();			
@@ -178,7 +180,7 @@ public class myDatacenter extends Datacenter{
 				" 	"+missInsert+
 				" 	"+missForceInsert+
 				" 	"+missInsertEvict+
-				" 	"+totalEvicts+
+				//" 	"+totalEvicts+
 				" 	"+history.writes+
 				" 	"+history.L1H/history.L1+
 				" 	"+history.L2H/history.L2+
@@ -221,13 +223,10 @@ public class myDatacenter extends Datacenter{
 	private int handleRequest(double time) {		
 		
 		evicted=0;		
-		used=RAM.getUsed();
-		capacity=RAM.getSize();
-			
-		
-		if(method.equals("a")||method.equals("a1")||method.equals("e")){
+
+		if(methodScore.equals("a")||methodScore.equals("a1")||methodScore.equals("e")){
 			findEXDWeight(file.getEXDScore(),ratio.getRatio(),time,file.getEXDTime());
-		}else if(method.equals("l")){
+		}else if(methodScore.equals("l")){
 			findLFUWeight();
 		}else{
 			findLFUWeight();
@@ -241,7 +240,15 @@ public class myDatacenter extends Datacenter{
 		}
 		
 		
-		myVm v = getNextVM(host);
+		myVm v=null;
+		if(methodLoad.equals("r"))
+			{v = getNextVMRR(host);}
+		else if(methodLoad.equals("s"))
+			{v=getNextVMSpace();}
+		else if(methodLoad.equals("a"))
+			{v=getNextVMAccess();}
+		
+		
 		RAM=v.getVram();
 		used=RAM.getUsed();
 		capacity=RAM.getSize();
@@ -302,7 +309,7 @@ public class myDatacenter extends Datacenter{
 
 	public void findEXDWeight(double lastScore,double a, double timeNow, double lastAccess){
 		double deltatime = timeNow-lastAccess;	
-	
+		//System.out.println(deltatime);
 				
 		file.incAccessNum();		
 		if(file.getAccessNum()==1){			
@@ -322,15 +329,15 @@ public class myDatacenter extends Datacenter{
 		}
 		Collections.sort(CacheState);
 		
-		if(method.equals("a")){
+		if(methodScore.equals("a")){
 			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file));
 			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file));
 			Collections.sort(CacheState);
-		}else if(method.equals("a1")){
+		}else if(methodScore.equals("a1")){
 			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file)+1);
 			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+getAHPWeight(file)+1);
 			Collections.sort(CacheState);
-		}else if(method.equals("e")){
+		}else if(methodScore.equals("e")){
 			file.setProbility(lastScore*Math.pow(Math.E, -a*deltatime)+1);
 			file.setEXDScore(lastScore*Math.pow(Math.E, -a*deltatime)+1);
 			Collections.sort(CacheState);
@@ -376,13 +383,28 @@ public class myDatacenter extends Datacenter{
 		return 1;	
 	}
 	
-	public myVm getNextVM(Host host){
+	public myVm getNextVMRR(Host host){
 		int s=host.getVmList().size();
 		myVm x = vmlist.get(VMcounter%s);
 		VMcounter++;
 		return x;
 	}
 	
+	public myVm getNextVMAccess(){
+		ArrayList<myVm> x = new ArrayList<myVm>();
+		for(myVm v:vmlist)
+			x.add(v);		
+		myVm.sortAccess(x);	
+		return x.get(0);
+	}
+	
+	public myVm getNextVMSpace(){
+		ArrayList<myVm> x = new ArrayList<myVm>();
+		for(myVm v:vmlist)
+			x.add(v);		
+		myVm.sortRamSpace(x);	
+		return x.get(0);
+	}
 	
 	@Override
 	public void processEvent(SimEvent ev) {
