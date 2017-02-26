@@ -66,7 +66,7 @@ public class myDatacenter extends Datacenter{
 	private int VMcounter=0;
 	private int printing=1;
 	private String methodScore="a";
-	private String methodLoad="a";
+	private String methodLoad="r";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -103,7 +103,7 @@ public class myDatacenter extends Datacenter{
 		Vm VM = host.getVm(VmId, UserId);
 		RAM= ((myVm) VM).getVram();
 		CacheState = ((myVm) VM).getCacheState();
-		((myVm) VM).incNumAccess();
+		
 		
 		
 		file = cl.getUE();			
@@ -114,7 +114,7 @@ public class myDatacenter extends Datacenter{
 		
 		//Cache:Hit!
 		if(result==1){
-			history.incTotalHit();				
+			history.incTotalHit();	
 		}
 		
 
@@ -235,6 +235,7 @@ public class myDatacenter extends Datacenter{
 		
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
+				x.incNumAccess();
 				return 1;
 			}
 		}
@@ -259,6 +260,7 @@ public class myDatacenter extends Datacenter{
 			insert(file);
 			RAM.addFile(file);
 			evicted=0;
+			v.incNumAccess();
 			return 0;
 		}
 					
@@ -277,7 +279,7 @@ public class myDatacenter extends Datacenter{
 			}
 		}
 		
-		//System.out.println(freespace+" "+file.getSize()+" "+Evict.size());//0000000000000000000000000000000000000000000000000000000000000000000000000000000					
+						
 		
 		if(freespace<file.getSize()){
 			//System.out.println("Cache:Missed!, No insertion");
@@ -286,6 +288,7 @@ public class myDatacenter extends Datacenter{
 			remove(x);
 			RAM.addFile(file);
 			insert(file);
+			v.incNumAccess();
 			return -1;
 		}
 					
@@ -303,6 +306,7 @@ public class myDatacenter extends Datacenter{
 		Evict.clear();
 		insert(file);
 		RAM.addFile(file);
+		v.incNumAccess();
 		return -2;
 	}
 	
