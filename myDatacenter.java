@@ -65,8 +65,8 @@ public class myDatacenter extends Datacenter{
 	
 	private int VMcounter=0;
 	private int printing=1;
-	private String methodScore="a";
-	private String methodLoad="r";
+	private String methodScore="a1";
+	private String methodLoad="a";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -138,11 +138,11 @@ public class myDatacenter extends Datacenter{
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
 
-			history.addWrites(evicted);
-			history.incIdvWrite(file.getCriteria(),evicted);			
+			history.addWrites(evicted+1);
+			history.incIdvWrite(file.getCriteria(),evicted+1);			
 
 			//System.out.println(evicted);
-			missInsertEvict=missInsertEvict+evicted;
+			missInsertEvict=missInsertEvict+evicted+1;
 			totalEvicts=totalEvicts+evicted;
 		}
 		
@@ -150,14 +150,14 @@ public class myDatacenter extends Datacenter{
 		//Cache:Missed!, force insertion
 		if(result==-1){    
 			history.incTotalMiss();
-		
-			history.addWrites(1);
-			history.incIdvWrite(file.getCriteria(),1);			
-		
+						
 			history.incNumInsert();	
 			history.incIdvInsert(file.getCriteria(),1);
+		
+			history.addWrites(1+1);
+			history.incIdvWrite(file.getCriteria(),1+1);			
 			
-			missForceInsert++;
+			missForceInsert=missForceInsert+1+1;
 		}
 		
 		
@@ -182,6 +182,7 @@ public class myDatacenter extends Datacenter{
 				" 	"+missInsertEvict+
 				//" 	"+totalEvicts+
 				" 	"+history.writes+
+				" 	"+""+
 				" 	"+history.L1H/history.L1+
 				" 	"+history.L2H/history.L2+
 				" 	"+history.L3H/history.L3+
