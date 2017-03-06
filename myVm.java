@@ -212,4 +212,24 @@ public class myVm extends Vm {
 		});
 	}
 
+	
+	public static void sortUEC(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				double x= o1.getCacheState().get(0).getProbility()-o2.getCacheState().get(0).getProbility();
+					if(x>0){
+						return 1;
+					}else if(x<0){
+						return -1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+	
+	
 }

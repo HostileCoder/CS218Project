@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 import org.cloudbus.cloudsim.CloudletScheduler;
@@ -65,8 +66,8 @@ public class myDatacenter extends Datacenter{
 	
 	private int VMcounter=0;
 	private int printing=1;
-	private String methodScore="a1";
-	private String methodLoad="a";
+	private String methodScore="a";
+	private String methodLoad="sUEC";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -243,13 +244,16 @@ public class myDatacenter extends Datacenter{
 		
 		
 		myVm v=null;
-		if(methodLoad.equals("r"))
+		if(methodLoad.equals("rr"))
 			{v = getNextVMRR(host);}
 		else if(methodLoad.equals("s"))
 			{v=getNextVMSpace();}
 		else if(methodLoad.equals("a"))
 			{v=getNextVMAccess();}
-		
+		else if(methodLoad.equals("rnd"))
+			{v=getNextVMRnd();}
+		else if(methodLoad.equals("sUEC"))
+			{v=getNextVMSpaceUEC();}
 		
 		RAM=v.getVram();
 		used=RAM.getUsed();
@@ -404,12 +408,54 @@ public class myDatacenter extends Datacenter{
 	}
 	
 	public myVm getNextVMSpace(){
+		
+		int size=0;		
+		for(myVm v:vmlist){
+			if(v.getRamSpace()!=0){
+				break;
+			}
+			size++;		
+			if(size==4){
+				return vmlist.get(new Random().nextInt(vmlist.size()));
+			}
+		}
+		
 		ArrayList<myVm> x = new ArrayList<myVm>();
 		for(myVm v:vmlist)
 			x.add(v);		
 		myVm.sortRamSpace(x);	
 		return x.get(0);
 	}
+	
+	public myVm getNextVMRnd(){	
+		return vmlist.get(new Random().nextInt(vmlist.size()));
+	}
+	
+	public myVm getNextVMSpaceUEC(){
+
+		int size=0;		
+		for(myVm v:vmlist){
+			if(v.getRamSpace()!=0){
+				break;
+			}
+			size++;		
+			if(size==4){
+							
+				ArrayList<myVm> x = new ArrayList<myVm>();
+				for(myVm vv:vmlist)
+					x.add(vv);		
+				myVm.sortUEC(x);				
+				return x.get(0);
+			}
+		}
+		
+		ArrayList<myVm> x = new ArrayList<myVm>();
+		for(myVm v:vmlist)
+			x.add(v);		
+		myVm.sortRamSpace(x);	
+		return x.get(0);
+	}
+	
 	
 	@Override
 	public void processEvent(SimEvent ev) {
