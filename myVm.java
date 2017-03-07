@@ -3,6 +3,8 @@ package CS218Project;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /*
  * Title: CloudSim Toolkit Description: CloudSim (Cloud Simulation) Toolkit for Modeling and
@@ -32,6 +34,8 @@ public class myVm extends Vm {
 	private Ratio ratio=new Ratio(Math.pow(10, -3));
 	private History history = new History(0,0,0,ratio.getRatio());
 	private ArrayList<UE_Context> CacheState = new ArrayList<UE_Context>();
+	//SortedMap<UE_Context, String> CacheState = new TreeMap<UE_Context, String>( new CUEC());
+	
 	private int reqRam=0;
 	private int spareRam=0;
 	private int userSize=0;

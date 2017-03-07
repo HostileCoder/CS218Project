@@ -4,14 +4,28 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Random;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.cloudbus.cloudsim.File;
 import org.cloudbus.cloudsim.ParameterException;
 import org.cloudbus.cloudsim.core.CloudSim;
 
+
+
 public class ZT {
 
 	public static void main(String[] args) throws Exception {
+		
+		int num_user = 1; // number of cloud users
+		Calendar calendar = Calendar.getInstance(); // Calendar whose fields have been initialized with the current date and time.
+			boolean trace_flag = false; // trace events
+
+		CloudSim.init(num_user, calendar, trace_flag);
+		
+		
+		
+		
 		// TODO Auto-generated method stub
 //		CloudSim.init(1, Calendar.getInstance(), false);
 //		AHP ahp=new AHP(4);
@@ -70,15 +84,30 @@ public class ZT {
 //		y.printContent();
 		
 		
-		Distribution x= new Distribution (1400,1);
-		int size=0;
-		for(int i=0;i<100;i++){
-			System.out.println(new Random().nextInt(4));
-			size++;
-		}
-		
-		System.out.println(size);
+//		Distribution x= new Distribution (1400,1);
+//		int size=0;
+//		for(int i=0;i<100;i++){
+//			System.out.println(new Random().nextInt(4));
+//			size++;
+//		}
+//		
+//		System.out.println(size);
 	
+		
+		UE_Context x0=new UE_Context("F1", 1, 10,1,1);
+		UE_Context x1=new UE_Context("F2", 1, 333,1,1);
+		UE_Context x2=new UE_Context("F3", 1, 133,1,1);
+		UE_Context x3=new UE_Context("F4", 1, 12,1,1);
+		
+		SortedMap<UE_Context, String> s = new TreeMap<UE_Context, String>( new CUEC());
+		s.put(x0, x0.getName());
+		s.put(x1, x1.getName());
+		s.put(x2, x2.getName());
+		s.put(x3, x3.getName());
+		
+		s.remove(s.firstKey());
+		System.out.println(s);
+		
 	}
 
 }
