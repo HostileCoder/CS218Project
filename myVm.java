@@ -41,6 +41,7 @@ public class myVm extends Vm {
 	private int userSize=0;
 	private int ramSpace=0;
 	private int numAccess=0;
+	private double CPUload=0;
 	
 	/**
 	 * Creates a new Vm object.
@@ -178,6 +179,23 @@ public class myVm extends Vm {
 		return numAccess=1+numAccess;
 	}
 	
+	public double getCPUload() {
+		return CPUload;
+	}
+
+	public void addCPUload(int c) {
+		if(c==0){
+			CPUload = CPUload + 1.0;
+		}else if(c==1){
+			CPUload = CPUload + .82;
+		}else if(c==2){
+			CPUload = CPUload + 1.24;
+		}else if(c==3){
+			CPUload = CPUload + .26;
+		}else if(c==4){
+			CPUload = CPUload + 2.31;
+		}		
+	}
 	
 	
 	public static void sortRamSpace(ArrayList<myVm> x)
@@ -217,6 +235,25 @@ public class myVm extends Vm {
 	}
 
 	
+	public static void sortCPU(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				double x= o1.getCPUload()-o2.getCPUload();
+					if(x>0){
+						return 1;
+					}else if(x<0){
+						return -1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+	
+	
 	public static void sortUEC(ArrayList<myVm> x)
 	{
 		Collections.sort(x,new Comparator<myVm>()
@@ -234,6 +271,8 @@ public class myVm extends Vm {
 			
 		});
 	}
+
+
 	
 	
 }

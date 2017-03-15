@@ -19,9 +19,9 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=2500*200;
+    private static int sizeRam=5000*200;
     private static double lambda=1400;
-    private static int numReq= 84000;
+    private static int numReq= 420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
@@ -108,6 +108,7 @@ public class CS298Project {
 			UtilizationModel utilizationModel = new UtilizationModelFull();
 
 		
+			ArrayList<UE_Context> l0 = new ArrayList<UE_Context>();
 			ArrayList<UE_Context> l1 = new ArrayList<UE_Context>();
 			ArrayList<UE_Context> l2 = new ArrayList<UE_Context>();
 			ArrayList<UE_Context> l3 = new ArrayList<UE_Context>();
@@ -116,67 +117,69 @@ public class CS298Project {
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
 				if(c==0){
-					l1.add(u);
+					l0.add(u);
 				}else if(c==1){
-					l2.add(u);
+					l1.add(u);
 				}else if(c==2){
-					l3.add(u);
+					l2.add(u);
 				}else if(c==3){
+					l3.add(u);
+				}else if(c==4){
 					l4.add(u);
 				}
 			}	
-			
+	
 			
 			vmid=0;
 			Random rn=new Random(); 
 			int x=numReq;		
 			while(x!=0){
-			
+				
 				double d = Math.random();
-				if(d <= SLARatio){
+				
+
+				if(d <= (double)25/1400){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);
-					
-	            	//bind the cloudlets to the vms. This way, the broker
-	            	// will submit the bound cloudlets only to the specific VM
-	            	//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
-				
-				}else if(d <= SLARatio*2){
-					UE_Context u=l3.get(rn.nextInt(l3.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);
-					
-					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
-				}else if(d <= SLARatio*4){
+					cloudletList.add(cloudlet);				
+	
+				}else if(d <= (double)30/1400){
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-					
-					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
-				}else {
+
+				}else if(d <= (double)100/1400){
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-					
-					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
+		
+				}else if(d <= (double)500/1400){
+					UE_Context u=l3.get(rn.nextInt(l3.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					cloudlet.setUserId(brokerId);
+					cloudlet.setVmId(vmid);
+					cloudletList.add(cloudlet);
+
+				}else {
+					UE_Context u=l0.get(rn.nextInt(l0.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					cloudlet.setUserId(brokerId);
+					cloudlet.setVmId(vmid);
+					cloudletList.add(cloudlet);		
+
 				}
 				x--;
 				id++;
-				//vmid++;
 				vmid= new Random().nextInt(numVM);
 			}
-			
 
-										
+		
 			// submit cloudlet list to the broker
 			broker.submitCloudletList(cloudletList);
 
@@ -201,7 +204,7 @@ public class CS298Project {
 		
 	
 	@SuppressWarnings("unused")
-	private static ArrayList<UE_Context> fillhardrive(HarddriveStorage Harddrive) throws ParameterException{
+	private static ArrayList<UE_Context> createUEC() throws ParameterException{
 		Random rn = new Random();
 		Random oz=new Random(); 
 		
@@ -212,16 +215,31 @@ public class CS298Project {
 			UE_Context u =new UE_Context(Integer.toString(i),UEfileSize,0.0,1,ran);
 			UE.add(u);
 			
-			oz=new Random(); 
-			int x=oz.nextInt(1); 
-			if(x==1){
-				Harddrive.addFile(u);
-			}
+//			oz=new Random(); 
+//			int x=oz.nextInt(1); 
+//			if(x==1){
+//				Harddrive.addFile(u);
+//			}
 		}
 
 		return UE;
 	}
 	
+	
+	
+	private static ArrayList<UE_Context> createUEC2() throws ParameterException{
+		Random rn = new Random();
+	
+		for(int i=0;i<sizeUE;i++){
+			int max=4;
+			int min=0;
+			int ran= rn.nextInt(max - min + 1) + min;
+			UE_Context u =new UE_Context(Integer.toString(i),UEfileSize,0.0,1,ran);
+			UE.add(u);
+		}
+
+		return UE;
+	}
 	
 
 	/**
@@ -289,8 +307,9 @@ public class CS298Project {
 	
 		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeRam);
 		storageList.add(hd);
-		fillhardrive(hd);
-
+		//fillhardrive(hd);
+		createUEC2();
+		
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
 				costPerStorage, costPerBw);

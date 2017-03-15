@@ -48,6 +48,8 @@ public class myDatacenter extends Datacenter{
 	public  int missInsertH=0;
 	public  int missNoInsertH=0;
 	public  int missInsertEvictH=0;
+	
+	public int reqType=0;
 
 	
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
@@ -66,8 +68,8 @@ public class myDatacenter extends Datacenter{
 	
 	private int VMcounter=0;
 	private int printing=1;
-	private String methodScore="a";
-	private String methodLoad="sUEC";
+	private String methodScore="e";
+	private String methodLoad="cpu";
 
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -90,8 +92,6 @@ public class myDatacenter extends Datacenter{
 	
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
 	
-
-		//System.out.println(vmlist.get(0).getId());
 	
 		double time = ev.eventTime();			
 		myCloudlet cl = (myCloudlet) ev.getData();
@@ -240,6 +240,7 @@ public class myDatacenter extends Datacenter{
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
 				x.incNumAccess();
+				x.addCPUload(file.getCriteria());
 				return 1;
 			}
 		}
@@ -256,6 +257,8 @@ public class myDatacenter extends Datacenter{
 			{v=getNextVMRnd();}
 		else if(methodLoad.equals("sUEC"))
 			{v=getNextVMSpaceUEC();}
+		else if(methodLoad.equals("cpu"))
+			{v=getNextVMCPU();}
 		
 		RAM=v.getVram();
 		used=RAM.getUsed();
@@ -268,6 +271,7 @@ public class myDatacenter extends Datacenter{
 			RAM.addFile(file);
 			evicted=0;
 			v.incNumAccess();
+			v.addCPUload(file.getCriteria());
 			return 0;
 		}
 					
@@ -296,6 +300,7 @@ public class myDatacenter extends Datacenter{
 			RAM.addFile(file);
 			insert(file);
 			v.incNumAccess();
+			v.addCPUload(file.getCriteria());
 			return -1;
 		}
 					
@@ -314,6 +319,7 @@ public class myDatacenter extends Datacenter{
 		insert(file);
 		RAM.addFile(file);
 		v.incNumAccess();
+		v.addCPUload(file.getCriteria());
 		return -2;
 	}
 	
@@ -457,4 +463,9 @@ public class myDatacenter extends Datacenter{
 	}
 	
 		
+	public myVm getNextVMCPU(){
+		myVm.sortCPU((ArrayList<myVm>) vmlist);	
+		return vmlist.get(0);
+	}
+	
 }
