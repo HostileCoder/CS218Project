@@ -67,10 +67,10 @@ public class myDatacenter extends Datacenter{
 	
 	
 	private int VMcounter=0;
-	private int printing=1;
-	private String methodScore="e";
-	private String methodLoad="cpu";
-
+	private int printing=0;
+	private String methodScore="l";
+	private String methodLoad="rnd";
+	public SimData sd = new SimData();
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
 			List<Storage> storageList, double schedulingInterval) throws Exception {
@@ -91,7 +91,7 @@ public class myDatacenter extends Datacenter{
 	
 	
 	protected void processCloudletSubmit(SimEvent ev, boolean ack) {
-	
+		updateCloudletProcessing();
 	
 		double time = ev.eventTime();			
 		myCloudlet cl = (myCloudlet) ev.getData();
@@ -105,13 +105,13 @@ public class myDatacenter extends Datacenter{
 		RAM= ((myVm) VM).getVram();
 		CacheState = ((myVm) VM).getCacheState();
 		
-		
-		
+			
 		file = cl.getUE();			
-		int result= handleRequest(time);
+		int result= handleRequest(time,(myVm) VM);	//This modify VM reference
 		history.incTotalRequest();		
 		history.incIdvHit(file.getCriteria(),result);
-				
+			
+		cl.setVmId(VM.getId());
 		
 		//Cache:Hit!
 		if(result==1){
@@ -161,43 +161,21 @@ public class myDatacenter extends Datacenter{
 			missForceInsert=missForceInsert+1+1;
 		}
 		
-		
-		//System.out.println(RAM.getFreeSpace());
-		//if(RAM.getFreeSpace()<=0&&printing==1)
+
 		if(printing==1)
 		System.out.println(time+
 				" 	"+missInsert+
 				" 	"+missForceInsert+
 				" 	"+missInsertEvict+
-				//" 	"+totalEvicts+
 				" 	"+history.writes+
 				" 	"+""+
-				" 	"+history.L1H/history.L1+
-				" 	"+history.L2H/history.L2+
-				" 	"+history.L3H/history.L3+
-				" 	"+history.L4H/history.L4+	
-				""); 
-		
-
-//		outputWriter.write(time+
-//				" 	"+missInsert+
-//				" 	"+missForceInsert+
-//				" 	"+missInsertEvict+
-//				//" 	"+totalEvicts+
-//				" 	"+history.writes+
-//				" 	"+""+
 //				" 	"+history.L1H/history.L1+
 //				" 	"+history.L2H/history.L2+
 //				" 	"+history.L3H/history.L3+
 //				" 	"+history.L4H/history.L4+	
-//				"\n");	
-//		outputWriter.flush();
+				""); 
+		
 
-		if(printing==0)
-		System.out.println(vmlist.get(0).getVram().getFreeSpace()+
-				" "+vmlist.get(1).getVram().getFreeSpace()+
-				" "+vmlist.get(2).getVram().getFreeSpace()+
-				" "+vmlist.get(3).getVram().getFreeSpace());
 		
 		cl.setResourceParameter(
                 getId(), getCharacteristics().getCostPerSecond(), 
@@ -220,11 +198,12 @@ public class myDatacenter extends Datacenter{
 			send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
 		}
 		
-		
+		sd.addQlen(scheduler.getCloudletExecList().size(),vmId);
+		sd.addTime(estimatedFinishTime,vmId);
 	}
 	
 
-	private int handleRequest(double time) {		
+	private int handleRequest(double time, myVm v) {		
 		
 		evicted=0;		
 
@@ -240,13 +219,12 @@ public class myDatacenter extends Datacenter{
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
 				x.incNumAccess();
-				x.addCPUload(file.getCriteria());
+				//x.addCPUload(file.getCriteria());
 				return 1;
 			}
 		}
 		
 		
-		myVm v=null;
 		if(methodLoad.equals("rr"))
 			{v = getNextVMRR(host);}
 		else if(methodLoad.equals("s"))
@@ -326,7 +304,6 @@ public class myDatacenter extends Datacenter{
 
 	public void findEXDWeight(double lastScore,double a, double timeNow, double lastAccess){
 		double deltatime = timeNow-lastAccess;	
-		//System.out.println(deltatime);
 				
 		file.incAccessNum();		
 		if(file.getAccessNum()==1){			

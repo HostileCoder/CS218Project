@@ -19,9 +19,9 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=5000*200;
+    private static int sizeRam=1250*200;
     private static double lambda=1400;
-    private static int numReq= 420000;
+    private static int numReq=420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
@@ -78,7 +78,7 @@ public class CS298Project {
 
 			// VM description
 			int vmid = 0;
-			int mips = 1000;
+			int mips = 141000;
 			long size = 10000; // image size (MB)
 			int ram = sizeRam; // vm memory (MB)
 			long bw = 1000;
@@ -102,7 +102,7 @@ public class CS298Project {
 
 			// Cloudlet properties
 			int id = 0;
-			long length = 0;
+			long length = 1;
 			long fileSize = 0;
 			long outputSize = 0;
 			UtilizationModel utilizationModel = new UtilizationModelFull();
@@ -140,35 +140,35 @@ public class CS298Project {
 
 				if(d <= (double)25/1400){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, 231, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);				
 	
 				}else if(d <= (double)30/1400){
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, 124, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 
 				}else if(d <= (double)100/1400){
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, 82, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 		
 				}else if(d <= (double)500/1400){
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, 26 , pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 
 				}else {
 					UE_Context u=l0.get(rn.nextInt(l0.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, 100, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);		
@@ -193,6 +193,10 @@ public class CS298Project {
 			printCloudletList(newList);
 
 			Log.printLine("CloudSimExample1 finished!");
+						
+			SimData sd = datacenter0.sd;
+			System.out.println(sd);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.printLine("Unwanted errors happen");
@@ -260,7 +264,7 @@ public class CS298Project {
 		int hostId = 0;
 		for(int i=0;i<numHost;i++){		
 				
-			    int mips = 4000;				
+			    int mips = 700000;				
 				// 2. A Machine contains one or more PEs or CPUs/Cores.
 				// In this example, it will have only one core.
 				List<Pe> peList = new ArrayList<Pe>();
