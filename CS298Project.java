@@ -19,10 +19,10 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=1250*200;
+    private static int sizeRam=3750*200;
     private static double lambda=1400;
-    //private static int numReq=84000;//420000
-    private static int numReq=420000;
+    private static int numReq=84000;//420000
+    //private static int numReq=420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
@@ -118,14 +118,12 @@ public class CS298Project {
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
 				if(c==0){
-					l0.add(u);
-				}else if(c==1){
 					l1.add(u);
-				}else if(c==2){
+				}else if(c==1){
 					l2.add(u);
-				}else if(c==3){
+				}else if(c==2){
 					l3.add(u);
-				}else if(c==4){
+				}else if(c==3){
 					l4.add(u);
 				}
 			}	
@@ -144,6 +142,7 @@ public class CS298Project {
 			while(x!=0){
 				
 				double d = Math.random();
+
 				if(d <= (double)25/1400){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, AtDe, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
@@ -171,7 +170,7 @@ public class CS298Project {
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-
+					
 				}else {
 					UE_Context u=l0.get(rn.nextInt(l0.size()));
 					myCloudlet cloudlet =  new myCloudlet(id, UES, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
@@ -179,6 +178,7 @@ public class CS298Project {
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);		
 				}
+				
 				x--;
 				id++;
 				vmid= new Random().nextInt(numVM);
@@ -200,7 +200,7 @@ public class CS298Project {
 			Log.printLine("CloudSimExample1 finished!");
 						
 			SimData sd = datacenter0.sd;
-			System.out.println(sd);
+			//System.out.println(sd);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -317,7 +317,7 @@ public class CS298Project {
 		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeRam);
 		storageList.add(hd);
 		//fillhardrive(hd);
-		createUEC2();
+		createUEC();
 		
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
