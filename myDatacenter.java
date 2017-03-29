@@ -66,8 +66,8 @@ public class myDatacenter extends Datacenter{
 	
 	
 	private int VMcounter=0;
-	private int printing=0;
-	private String methodScore="l";
+	private int printing=1;
+	private String methodScore="a";
 	private String methodLoad="rr";
 	public SimData sd = new SimData();
 	
@@ -191,10 +191,14 @@ public class myDatacenter extends Datacenter{
 				" 	"+missInsertEvict+
 				" 	"+history.writes+
 				" 	"+""+
-//				" 	"+history.L1H/history.L1+
-//				" 	"+history.L2H/history.L2+
-//				" 	"+history.L3H/history.L3+
-//				" 	"+history.L4H/history.L4+	
+				" 	"+history.L1H/history.L1+
+				" 	"+history.L2H/history.L2+
+				" 	"+history.L3H/history.L3+
+				" 	"+history.L4H/history.L4+
+				" 	"+history.L1W/history.L1+
+				" 	"+history.L2W/history.L2+
+				" 	"+history.L3W/history.L3+
+				" 	"+history.L4W/history.L4+
 				""); 
 		
 
@@ -221,19 +225,19 @@ public class myDatacenter extends Datacenter{
 		}
 		
 		
-		for(myVm v:vmlist){
-			CloudletScheduler s = v.getCloudletScheduler();
-			double timeFinish=0;
-			for (ResCloudlet rc : s.getCloudletExecList()) {
-				timeFinish=timeFinish+rc.getRemainingCloudletLength();
-			}				
-			v.SetFinishTime(timeFinish);
-			
-			if(vmId==v.getId()){
-				sd.addQlen(s.getCloudletExecList().size());
-				sd.addTime(timeFinish);
-			}
-		}
+//		for(myVm v:vmlist){
+//			CloudletScheduler s = v.getCloudletScheduler();
+//			double timeFinish=0;
+//			for (ResCloudlet rc : s.getCloudletExecList()) {
+//				timeFinish=timeFinish+rc.getRemainingCloudletLength();
+//			}				
+//			v.SetFinishTime(timeFinish);
+//			
+//			if(vmId==v.getId()){
+//				sd.addQlen(s.getCloudletExecList().size());
+//				sd.addTime(timeFinish);
+//			}
+//		}
 		
 
 	}

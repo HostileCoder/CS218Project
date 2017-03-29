@@ -19,10 +19,10 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=1250*200;
+    private static int sizeRam=3750*200;
     private static double lambda=1400;
-    //private static int numReq=84000;//420000
-    private static int numReq=420000;
+    private static int numReq=84000;//420000
+    //private static int numReq=420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
@@ -118,14 +118,12 @@ public class CS298Project {
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
 				if(c==0){
-					l0.add(u);
-				}else if(c==1){
 					l1.add(u);
-				}else if(c==2){
+				}else if(c==1){
 					l2.add(u);
-				}else if(c==3){
+				}else if(c==2){
 					l3.add(u);
-				}else if(c==4){
+				}else if(c==3){
 					l4.add(u);
 				}
 			}	
@@ -138,42 +136,41 @@ public class CS298Project {
 				
 				double d = Math.random();
 				
-
-				if(d <= (double)25/1400){
+				if(d <= SLARatio){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 231, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);				
-	
-				}else if(d <= (double)30/1400){
-					UE_Context u=l2.get(rn.nextInt(l2.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 124, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-
-				}else if(d <= (double)100/1400){
-					UE_Context u=l1.get(rn.nextInt(l1.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 82, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
-					cloudlet.setUserId(brokerId);
-					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);
-		
-				}else if(d <= (double)500/1400){
+					
+	            	//bind the cloudlets to the vms. This way, the broker
+	            	// will submit the bound cloudlets only to the specific VM
+	            	//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
+				
+				}else if(d <= SLARatio*2){
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 26 , pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-
-				}else {
-					UE_Context u=l0.get(rn.nextInt(l0.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 100, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
+				}else if(d <= SLARatio*4){
+					UE_Context u=l2.get(rn.nextInt(l2.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
-					cloudletList.add(cloudlet);		
-
+					cloudletList.add(cloudlet);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
+				}else {
+					UE_Context u=l1.get(rn.nextInt(l1.size()));
+					myCloudlet cloudlet =  new myCloudlet(id, length, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					cloudlet.setUserId(brokerId);
+					cloudlet.setVmId(vmid);
+					cloudletList.add(cloudlet);
+					
+					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}
 				x--;
 				id++;
@@ -196,7 +193,7 @@ public class CS298Project {
 			Log.printLine("CloudSimExample1 finished!");
 						
 			SimData sd = datacenter0.sd;
-			System.out.println(sd);
+			//System.out.println(sd);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -313,7 +310,7 @@ public class CS298Project {
 		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeRam);
 		storageList.add(hd);
 		//fillhardrive(hd);
-		createUEC2();
+		createUEC();
 		
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
