@@ -227,19 +227,19 @@ public class myDatacenter extends Datacenter{
 		}
 		
 		
-//		for(myVm v:vmlist){
-//			CloudletScheduler s = v.getCloudletScheduler();
-//			double timeFinish=0;
-//			for (ResCloudlet rc : s.getCloudletExecList()) {
-//				timeFinish=timeFinish+rc.getRemainingCloudletLength();
-//			}				
-//			v.SetFinishTime(timeFinish);
-//			
-//			if(vmId==v.getId()){
-//				sd.addQlen(s.getCloudletExecList().size());
-//				sd.addTime(timeFinish);
-//			}
-//		}
+		for(myVm v:vmlist){
+			CloudletScheduler s = v.getCloudletScheduler();
+			double timeFinish=0;
+			for (ResCloudlet rc : s.getCloudletExecList()) {
+				timeFinish=timeFinish+rc.getRemainingCloudletLength();
+			}				
+			v.SetFinishTime(timeFinish);
+			
+			if(vmId==v.getId()){
+				sd.addQlen(s.getCloudletExecList().size());
+				sd.addTime(timeFinish);
+			}
+		}
 		
 
 	}

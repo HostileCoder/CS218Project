@@ -21,8 +21,8 @@ public class CS298Project {
     private static int sizeUE=25000;
     private static int sizeRam=3750*200;
     private static double lambda=1400;
-    private static int numReq=84000;//420000
-    //private static int numReq=420000;
+    //private static int numReq=84000;//420000
+    private static int numReq=420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     
@@ -115,6 +115,7 @@ public class CS298Project {
 			ArrayList<UE_Context> l3 = new ArrayList<UE_Context>();
 			ArrayList<UE_Context> l4 = new ArrayList<UE_Context>();
 			
+
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
 				if(c==0){
@@ -202,7 +203,7 @@ public class CS298Project {
 			Log.printLine("CloudSimExample1 finished!");
 						
 			SimData sd = datacenter0.sd;
-			//System.out.println(sd);
+			System.out.println(sd);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -319,7 +320,7 @@ public class CS298Project {
 		HarddriveStorage hd =  new HarddriveStorage("HD0",sizeRam);
 		storageList.add(hd);
 		//fillhardrive(hd);
-		createUEC();
+		createUEC2();
 		
 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
