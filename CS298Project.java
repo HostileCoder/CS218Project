@@ -21,6 +21,7 @@ public class CS298Project {
     private static int sizeUE=25000;
     private static int sizeRam=1250*200;
     private static double lambda=1400;
+    //private static int numReq=84000;//420000
     private static int numReq=420000;
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;

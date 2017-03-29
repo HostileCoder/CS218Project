@@ -42,6 +42,8 @@ public class myVm extends Vm {
 	private int ramSpace=0;
 	private int numAccess=0;
 	private double CPUload=0;
+	private double FinishTime=0;
+	private int Qsize=0;
 	
 	/**
 	 * Creates a new Vm object.
@@ -182,7 +184,15 @@ public class myVm extends Vm {
 	public double getCPUload() {
 		return CPUload;
 	}
+	
+	public void SetFinishTime(double FinishTime) {
+		this.FinishTime=FinishTime;
+	}
 
+	public double getFinishTime() {
+		return FinishTime;
+	}
+	
 	public void addCPUload(int c) {
 		if(c==0){
 			CPUload = CPUload + 1.0;
@@ -209,6 +219,43 @@ public class myVm extends Vm {
 						return -1;
 					}else if(x<0){
 						return 1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+	
+	
+	public static void sortQTime(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				double x= o1.FinishTime-o2.FinishTime;
+					if(x>0){
+						return 1;
+					}else if(x<0){
+						return -1;
+					}
+					return 0;
+				}
+			
+		});
+	}
+	
+	public static void sortQSize(ArrayList<myVm> x)
+	{
+		Collections.sort(x,new Comparator<myVm>()
+		{
+			@Override
+			public int compare(myVm o1, myVm o2) {
+				double x= o1.Qsize-o2.Qsize;
+					if(x>0){
+						return 1;
+					}else if(x<0){
+						return -1;
 					}
 					return 0;
 				}
@@ -270,6 +317,16 @@ public class myVm extends Vm {
 				}
 			
 		});
+	}
+
+
+	public int getQsize() {
+		return Qsize;
+	}
+
+
+	public void setQsize(int qsize) {
+		Qsize = qsize;
 	}
 
 

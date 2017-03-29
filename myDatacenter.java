@@ -14,6 +14,7 @@ import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.HarddriveStorage;
 import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.ResCloudlet;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
@@ -53,9 +54,7 @@ public class myDatacenter extends Datacenter{
 
 	
 	private PrintWriter outputWriter = new PrintWriter ("file.txt");
-//	private PrintWriter outputWriter1 = new PrintWriter ("file1.txt");
-//	private PrintWriter outputWriter2 = new PrintWriter ("file2.txt");
-//	private PrintWriter outputWriter3 = new PrintWriter ("file3.txt");
+
 	
 	private List<myVm> vmlist = null;
 	private Host host=null;
@@ -69,7 +68,7 @@ public class myDatacenter extends Datacenter{
 	private int VMcounter=0;
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="rnd";
+	private String methodLoad="rr";
 	public SimData sd = new SimData();
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -101,16 +100,39 @@ public class myDatacenter extends Datacenter{
 		int VmId = cl.getVmId();
 		host = getVmAllocationPolicy().getHost(VmId, UserId);
 		vmlist=host.getVmList();
-		Vm VM = host.getVm(VmId, UserId);
-		RAM= ((myVm) VM).getVram();
-		CacheState = ((myVm) VM).getCacheState();
+		myVm VM = (myVm) host.getVm(VmId, UserId);
+		RAM= VM.getVram();
+		CacheState = VM.getCacheState();		
+		file = cl.getUE();		
 		
-			
-		file = cl.getUE();			
-		int result= handleRequest(time,(myVm) VM);	//This modify VM reference
+		
+		if(methodLoad.equals("rr"))
+		{VM = getNextVMRR(host);}
+			else if(methodLoad.equals("s"))
+		{VM=getNextVMSpace();}
+			else if(methodLoad.equals("a"))
+		{VM=getNextVMAccess();}
+			else if(methodLoad.equals("rnd"))
+		{VM=getNextVMRnd();}
+			else if(methodLoad.equals("sUEC"))
+		{VM=getNextVMSpaceUEC();}
+			else if(methodLoad.equals("cpu"))
+		{VM=getNextVMCPU();}
+			else if(methodLoad.equals("re"))
+		{VM=rEvent(file.getCriteria());}
+			else if(methodLoad.equals("qt"))
+		{VM=QTime(file.getCriteria());}
+			else if(methodLoad.equals("qs"))
+		{VM=QTime(file.getCriteria());}
+			else if(methodLoad.equals("tlb"))
+		{VM= TLB(file.getCriteria());}
+		
+		
+		int result= handleRequest(time,VM);	//This modify VM reference
 		history.incTotalRequest();		
 		history.incIdvHit(file.getCriteria(),result);
-			
+		
+	
 		cl.setVmId(VM.getId());
 		
 		//Cache:Hit!
@@ -198,12 +220,27 @@ public class myDatacenter extends Datacenter{
 			send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
 		}
 		
-		sd.addQlen(scheduler.getCloudletExecList().size(),vmId);
-		sd.addTime(estimatedFinishTime,vmId);
+		
+		for(myVm v:vmlist){
+			CloudletScheduler s = v.getCloudletScheduler();
+			double timeFinish=0;
+			for (ResCloudlet rc : s.getCloudletExecList()) {
+				timeFinish=timeFinish+rc.getRemainingCloudletLength();
+			}				
+			v.SetFinishTime(timeFinish);
+			
+			if(vmId==v.getId()){
+				sd.addQlen(s.getCloudletExecList().size());
+				sd.addTime(timeFinish);
+			}
+		}
+		
+
 	}
 	
 
 	private int handleRequest(double time, myVm v) {		
+		
 		
 		evicted=0;		
 
@@ -219,24 +256,11 @@ public class myDatacenter extends Datacenter{
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
 				x.incNumAccess();
-				//x.addCPUload(file.getCriteria());
+				x.addCPUload(file.getCriteria());
 				return 1;
 			}
 		}
-		
-		
-		if(methodLoad.equals("rr"))
-			{v = getNextVMRR(host);}
-		else if(methodLoad.equals("s"))
-			{v=getNextVMSpace();}
-		else if(methodLoad.equals("a"))
-			{v=getNextVMAccess();}
-		else if(methodLoad.equals("rnd"))
-			{v=getNextVMRnd();}
-		else if(methodLoad.equals("sUEC"))
-			{v=getNextVMSpaceUEC();}
-		else if(methodLoad.equals("cpu"))
-			{v=getNextVMCPU();}
+				
 		
 		RAM=v.getVram();
 		used=RAM.getUsed();
@@ -298,6 +322,9 @@ public class myDatacenter extends Datacenter{
 		RAM.addFile(file);
 		v.incNumAccess();
 		v.addCPUload(file.getCriteria());
+		
+		
+		
 		return -2;
 	}
 	
@@ -375,6 +402,8 @@ public class myDatacenter extends Datacenter{
 		return 1;	
 	}
 	
+	
+	
 	public myVm getNextVMRR(Host host){
 		int s=host.getVmList().size();
 		myVm x = vmlist.get(VMcounter%s);
@@ -382,16 +411,16 @@ public class myDatacenter extends Datacenter{
 		return x;
 	}
 	
+	
+	
 	public myVm getNextVMAccess(){
-//		ArrayList<myVm> x = new ArrayList<myVm>();
-//		for(myVm v:vmlist)
-//			x.add(v);		
 		myVm.sortAccess((ArrayList<myVm>) vmlist);	
 		return vmlist.get(0);
 	}
 	
-	public myVm getNextVMSpace(){
-		
+	
+	
+	public myVm getNextVMSpace(){		
 		int size=0;		
 		for(myVm v:vmlist){
 			if(v.getRamSpace()!=0){
@@ -402,17 +431,18 @@ public class myDatacenter extends Datacenter{
 				return vmlist.get(new Random().nextInt(vmlist.size()));
 			}
 		}
-		
-//		ArrayList<myVm> x = new ArrayList<myVm>();
-//		for(myVm v:vmlist)
-//			x.add(v);		
 		myVm.sortRamSpace((ArrayList<myVm>) vmlist);	
 		return vmlist.get(0);
 	}
 	
+	
+	
+	
 	public myVm getNextVMRnd(){	
 		return vmlist.get(new Random().nextInt(vmlist.size()));
 	}
+	
+	
 	
 	public myVm getNextVMSpaceUEC(){
 
@@ -422,19 +452,11 @@ public class myDatacenter extends Datacenter{
 				break;
 			}
 			size++;		
-			if(size==4){
-							
-//				ArrayList<myVm> x = new ArrayList<myVm>();
-//				for(myVm vv:vmlist)
-//					x.add(vv);		
+			if(size==4){					
 				myVm.sortUEC((ArrayList<myVm>) vmlist);				
 				return vmlist.get(0);
 			}
 		}
-		
-//		ArrayList<myVm> x = new ArrayList<myVm>();
-//		for(myVm v:vmlist)
-//			x.add(v);		
 		myVm.sortRamSpace((ArrayList<myVm>) vmlist);	
 		return vmlist.get(0);
 	}
@@ -445,4 +467,86 @@ public class myDatacenter extends Datacenter{
 		return vmlist.get(0);
 	}
 	
+	
+	public myVm rEvent(int c){
+		myVm vm=null;
+		if(c==0){
+			vm=vmlist.get(0);
+		}else if(c==1){
+			vm=vmlist.get(1);
+		}else if(c==2||c==4){
+			vm=vmlist.get(2);
+		}else if(c==3){
+			vm=vmlist.get(3);
+		}else if(c==4){
+		
+		}	
+		return vm;		
+	}
+	
+	public myVm QTime(int c){
+		myVm.sortQTime((ArrayList<myVm>) vmlist);	
+		myVm vm=null;
+		
+		if(vmlist.get(0).getFinishTime()==0){
+			vm=vmlist.get(0);
+		}
+		
+		if(c==4){
+			vm=vmlist.get(0);
+		}else if(c==2){
+			vm=vmlist.get(1);
+		}else if(c==0||c==1){
+			vm=vmlist.get(2);
+		}else if(c==3){
+			vm=vmlist.get(3);
+		}else if(c==4){
+		
+		}	
+		
+		return vm;	
+	}
+	
+	
+	public myVm QSize(int c){
+		myVm.sortQSize((ArrayList<myVm>) vmlist);	
+		myVm vm=null;
+		
+		if(c==4){
+			vm=vmlist.get(0);
+		}else if(c==2){
+			vm=vmlist.get(1);
+		}else if(c==0||c==1){
+			vm=vmlist.get(2);
+		}else if(c==3){
+			vm=vmlist.get(3);
+		}else if(c==4){
+		
+		}	
+		
+		return vm;	
+	}
+	
+	
+	public myVm TLB(int c){
+		//myVm.sortQTime((ArrayList<myVm>) vmlist);	
+		myVm vm=null;
+			
+		if(c==0){
+			vm=vmlist.get(0);
+		}else if(c==3){
+			vm=vmlist.get(1);
+		}else{
+			vm=vmlist.get(new Random().nextInt(1)+2);
+		}
+		
+		return vm;	
+	}
+	
 }
+
+
+
+//ArrayList<myVm> x = new ArrayList<myVm>();
+//for(myVm v:vmlist)
+//	x.add(v);		
