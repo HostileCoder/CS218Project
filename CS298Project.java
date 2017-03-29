@@ -131,49 +131,53 @@ public class CS298Project {
 			}	
 	
 			
+			int UES=100;	//100	750 reqs
+			int HO=82;		//82	100 reqs
+			int TAU=124;	//124	30 reqs
+			int PG=26;		//26	500 reqs
+			int AtDe=231;	//231	25 reqs
+					
+			
 			vmid=0;
 			Random rn=new Random(); 
 			int x=numReq;		
 			while(x!=0){
 				
 				double d = Math.random();
-				
-
 				if(d <= (double)25/1400){
 					UE_Context u=l4.get(rn.nextInt(l4.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 231, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, AtDe, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);				
 	
 				}else if(d <= (double)30/1400){
 					UE_Context u=l2.get(rn.nextInt(l2.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 124, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, TAU, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 
 				}else if(d <= (double)100/1400){
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 82, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, HO, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 		
 				}else if(d <= (double)500/1400){
 					UE_Context u=l3.get(rn.nextInt(l3.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 26 , pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, PG , pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 
 				}else {
 					UE_Context u=l0.get(rn.nextInt(l0.size()));
-					myCloudlet cloudlet =  new myCloudlet(id, 100, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
+					myCloudlet cloudlet =  new myCloudlet(id, UES, pesNumber, fileSize,outputSize, utilizationModel, utilizationModel, utilizationModel,u);
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);		
-
 				}
 				x--;
 				id++;

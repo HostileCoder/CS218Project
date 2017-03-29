@@ -68,7 +68,7 @@ public class myDatacenter extends Datacenter{
 	private int VMcounter=0;
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="rr";
+	private String methodLoad="ded";
 	public SimData sd = new SimData();
 	
 	public myDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
@@ -107,25 +107,25 @@ public class myDatacenter extends Datacenter{
 		
 		
 		if(methodLoad.equals("rr"))
-		{VM = getNextVMRR(host);}
-			else if(methodLoad.equals("s"))
-		{VM=getNextVMSpace();}
-			else if(methodLoad.equals("a"))
-		{VM=getNextVMAccess();}
-			else if(methodLoad.equals("rnd"))
-		{VM=getNextVMRnd();}
-			else if(methodLoad.equals("sUEC"))
-		{VM=getNextVMSpaceUEC();}
-			else if(methodLoad.equals("cpu"))
-		{VM=getNextVMCPU();}
-			else if(methodLoad.equals("re"))
-		{VM=rEvent(file.getCriteria());}
-			else if(methodLoad.equals("qt"))
-		{VM=QTime(file.getCriteria());}
-			else if(methodLoad.equals("qs"))
-		{VM=QTime(file.getCriteria());}
-			else if(methodLoad.equals("tlb"))
-		{VM= TLB(file.getCriteria());}
+			{VM = getNextVMRR(host);}
+		else if(methodLoad.equals("s"))
+			{VM=getNextVMSpace();}
+		else if(methodLoad.equals("a"))
+			{VM=getNextVMAccess();}
+		else if(methodLoad.equals("rnd"))
+			{VM=getNextVMRnd();}
+		else if(methodLoad.equals("sUEC"))
+			{VM=getNextVMSpaceUEC();}
+		else if(methodLoad.equals("cpu"))
+			{VM=getNextVMCPU();}
+		else if(methodLoad.equals("ded"))
+			{VM=Ded(file.getCriteria());}
+		else if(methodLoad.equals("qt"))
+			{VM=QTime(file.getCriteria());}
+		else if(methodLoad.equals("qs"))
+			{VM=QTime(file.getCriteria());}
+		else if(methodLoad.equals("tlb"))
+			{VM= TLB(file.getCriteria());}
 		
 		
 		int result= handleRequest(time,VM);	//This modify VM reference
@@ -468,7 +468,7 @@ public class myDatacenter extends Datacenter{
 	}
 	
 	
-	public myVm rEvent(int c){
+	public myVm Ded(int c){
 		myVm vm=null;
 		if(c==0){
 			vm=vmlist.get(0);
