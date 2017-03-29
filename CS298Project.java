@@ -118,12 +118,14 @@ public class CS298Project {
 			for(UE_Context u:UE){
 				int c = u.getCriteria();
 				if(c==0){
-					l1.add(u);
+					l0.add(u);
 				}else if(c==1){
-					l2.add(u);
+					l1.add(u);
 				}else if(c==2){
-					l3.add(u);
+					l2.add(u);
 				}else if(c==3){
+					l3.add(u);
+				}else if(c==4){
 					l4.add(u);
 				}
 			}	
