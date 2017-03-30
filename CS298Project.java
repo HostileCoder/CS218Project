@@ -5,6 +5,7 @@ import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -203,8 +204,19 @@ public class CS298Project {
 			Log.printLine("CloudSimExample1 finished!");
 						
 			SimData sd = datacenter0.sd;
-			System.out.println(sd.printPDF());
-			System.out.println(sd.printCDF());
+			
+			
+			
+			PrintWriter outputWriter0 = new PrintWriter ("pdf.txt");
+			PrintWriter outputWriter1 = new PrintWriter ("cdf.txt");
+			
+			outputWriter0.write(sd.printPDF());
+			outputWriter1.write(sd.printCDF());
+			outputWriter0.flush();
+			outputWriter1.flush();
+			System.out.println("DONE");
+//			System.out.println(sd.printPDF());
+//			System.out.println(sd.printCDF());
 			
 		} catch (Exception e) {
 			e.printStackTrace();

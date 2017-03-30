@@ -5,9 +5,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
+
 
 import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.Datacenter;
@@ -53,8 +52,6 @@ public class myDatacenter extends Datacenter{
 	public int reqType=0;
 
 	
-	private PrintWriter outputWriter = new PrintWriter ("file.txt");
-
 	
 	private List<myVm> vmlist = null;
 	private Host host=null;
@@ -69,7 +66,7 @@ public class myDatacenter extends Datacenter{
 
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="qt";
+	private String methodLoad="a";
 
 	public SimData sd = new SimData();
 	
