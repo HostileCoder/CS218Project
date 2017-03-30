@@ -203,7 +203,8 @@ public class CS298Project {
 			Log.printLine("CloudSimExample1 finished!");
 						
 			SimData sd = datacenter0.sd;
-			System.out.println(sd);
+			System.out.println(sd.printPDF());
+			System.out.println(sd.printCDF());
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -69,7 +69,7 @@ public class myDatacenter extends Datacenter{
 
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="ded";
+	private String methodLoad="qt";
 
 	public SimData sd = new SimData();
 	
@@ -125,7 +125,7 @@ public class myDatacenter extends Datacenter{
 		else if(methodLoad.equals("qt"))
 			{VM=QTime(file.getCriteria());}
 		else if(methodLoad.equals("qs"))
-			{VM=QTime(file.getCriteria());}
+			{VM=QSize(file.getCriteria());}
 		else if(methodLoad.equals("tlb"))
 			{VM= TLB(file.getCriteria());}
 		
@@ -234,7 +234,7 @@ public class myDatacenter extends Datacenter{
 				timeFinish=timeFinish+rc.getRemainingCloudletLength();
 			}				
 			v.SetFinishTime(timeFinish);
-			
+			v.setQsize(s.getCloudletExecList().size());
 			if(vmId==v.getId()){
 				sd.addQlen(s.getCloudletExecList().size());
 				sd.addTime(timeFinish);
@@ -516,8 +516,7 @@ public class myDatacenter extends Datacenter{
 	
 	public myVm QSize(int c){
 		myVm.sortQSize((ArrayList<myVm>) vmlist);	
-		myVm vm=null;
-		
+		myVm vm=null;	
 		if(c==4){
 			vm=vmlist.get(0);
 		}else if(c==2){
@@ -528,25 +527,13 @@ public class myDatacenter extends Datacenter{
 			vm=vmlist.get(3);
 		}else if(c==4){
 		
-		}	
-		
+		}		
 		return vm;	
 	}
 	
 	
 	public myVm TLB(int c){
-		//myVm.sortQTime((ArrayList<myVm>) vmlist);	
-		myVm vm=null;
-			
-		if(c==0){
-			vm=vmlist.get(0);
-		}else if(c==3){
-			vm=vmlist.get(1);
-		}else{
-			vm=vmlist.get(new Random().nextInt(1)+2);
-		}
-		
-		return vm;	
+		return null;
 	}
 	
 }

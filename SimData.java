@@ -5,43 +5,13 @@ import java.util.TreeMap;
 
 public class SimData {
 	
-	private TreeMap<Integer, Integer> Qlen = new TreeMap<Integer, Integer>();
+	private TreeMap<Integer, Integer> Qlen = new TreeMap<Integer, Integer>();	
+	private TreeMap<Double, Integer> Time = new TreeMap<Double, Integer>();		
 	
-	private TreeMap<Integer, Integer> Qlen0 = new TreeMap<Integer, Integer>();
-	private TreeMap<Integer, Integer> Qlen1 = new TreeMap<Integer, Integer>();
-	private TreeMap<Integer, Integer> Qlen2 = new TreeMap<Integer, Integer>();
-	private TreeMap<Integer, Integer> Qlen3 = new TreeMap<Integer, Integer>();
-	
-	private TreeMap<Double, Integer> Time = new TreeMap<Double, Integer>();
-	
-	private TreeMap<Double, Integer> Time0 = new TreeMap<Double, Integer>();
-	private TreeMap<Double, Integer> Time1 = new TreeMap<Double, Integer>();
-	private TreeMap<Double, Integer> Time2 = new TreeMap<Double, Integer>();
-	private TreeMap<Double, Integer> Time3 = new TreeMap<Double, Integer>();
-	
+	private TreeMap<Integer, Integer> QlenCDF = new TreeMap<Integer, Integer>();	
+	private TreeMap<Double, Integer> TimeCDF = new TreeMap<Double, Integer>();	
 	
 	private double uTime = 0.000709;
-	
-	
-	public void addQlen(int x, int id){
-		TreeMap<Integer, Integer> Qlen=null;	
-		if(id==0){
-			Qlen=Qlen0;
-		}else if(id==1){
-			Qlen=Qlen1;
-		}else if(id==2){
-			Qlen=Qlen2;
-		}else if(id==3){
-			Qlen=Qlen3;
-		}
-			
-		if(Qlen.containsKey(x)){
-			Qlen.put(x, Qlen.get(x) + 1);			
-		}else{
-			Qlen.put(x, 1);
-		}		
-	}
-	
 	
 	public void addQlen(int x){		
 		if(Qlen.containsKey(x)){
@@ -51,25 +21,6 @@ public class SimData {
 		}		
 	}
 	
-	public void addTime(double x, int id){
-		TreeMap<Double, Integer> Time=null;	
-		if(id==0){
-			Time=Time0;
-		}else if(id==1){
-			Time=Time1;
-		}else if(id==2){
-			Time=Time2;
-		}else if(id==3){
-			Time=Time3;
-		}
-				
-		x=format(x);
-		if(Time.containsKey(x)){
-			Time.put(x, Time.get(x) + 1);			
-		}else{
-			Time.put(x, 1);
-		}		
-	}
 	
 	public void addTime(double x){			
 		x=format(x);
@@ -86,10 +37,9 @@ public class SimData {
 	}
 	
 	
-	public String toString(){
+	public String printPDF(){
 		DecimalFormat df = new DecimalFormat("0.000000");
 		String x="";
-		
 
 		for(int i:Qlen.keySet()){
 			x=x.concat("\n");
@@ -109,27 +59,50 @@ public class SimData {
 		x=x.concat("\n");
 		x=x.concat(sumQ()+" "+sumT());
 		return x;
-}	
+	}	
 	
 	
 	
-	public String printResult(){
-		DecimalFormat df = new DecimalFormat("0.000000");
-		String x="";
-		for(int i:Qlen0.keySet()){
-			x=x.concat(i+"	"+Qlen0.get(i));
-			x=x.concat("	"+Qlen1.get(i));
-			x=x.concat("	"+Qlen2.get(i));
-			x=x.concat("	"+Qlen3.get(i));
+	public String printCDF(){
+		QlenCDF();
+		TimeCDF();
 		
-			x=x.concat("\n");
-	}
+		String x="";
+		for(int i:QlenCDF.keySet()){
+			x=x.concat("\n");	
+			x=x.concat(""+QlenCDF.get(i));	
+		}
+		
 		x=x.concat("\n");
-	return x;
-}
+		x=x.concat("\n");
+		x=x.concat("\n");
+		
+		for(double i:TimeCDF.keySet()){
+			x=x.concat("\n");
+			x=x.concat(""+TimeCDF.get(i));	
+		}
+		x=x.concat("\n");
+		x=x.concat(sumQ()+" "+sumT());
+		return x;
+	}
 	
 	
-
+	public void QlenCDF(){
+		int sum=0;
+		for(int x : Qlen.keySet()){
+			sum=Qlen.get(x)+sum;
+			QlenCDF.put(x, sum);
+		}
+	}
+	
+	
+	public void TimeCDF(){
+		int sum=0;
+		for(double x : Time.keySet()){
+			sum=Time.get(x)+sum;
+			TimeCDF.put(x, sum);
+		}
+	}
 	
 	public int sumQ(){
 		int x=0;
@@ -146,7 +119,80 @@ public class SimData {
 		}
 		return x;
 	}
-	
-
-		
 }
+
+
+
+
+
+
+//public void addQlen(int x, int id){
+//	TreeMap<Integer, Integer> Qlen=null;	
+//	if(id==0){
+//		Qlen=Qlen0;
+//	}else if(id==1){
+//		Qlen=Qlen1;
+//	}else if(id==2){
+//		Qlen=Qlen2;
+//	}else if(id==3){
+//		Qlen=Qlen3;
+//	}
+//		
+//	if(Qlen.containsKey(x)){
+//		Qlen.put(x, Qlen.get(x) + 1);			
+//	}else{
+//		Qlen.put(x, 1);
+//	}		
+//}
+//
+//
+//public void addTime(double x, int id){
+//	TreeMap<Double, Integer> Time=null;	
+//	if(id==0){
+//		Time=Time0;
+//	}else if(id==1){
+//		Time=Time1;
+//	}else if(id==2){
+//		Time=Time2;
+//	}else if(id==3){
+//		Time=Time3;
+//	}
+//			
+//	x=format(x);
+//	if(Time.containsKey(x)){
+//		Time.put(x, Time.get(x) + 1);			
+//	}else{
+//		Time.put(x, 1);
+//	}		
+//}
+//
+//public String printResult(){
+//	DecimalFormat df = new DecimalFormat("0.000000");
+//	String x="";
+//	for(int i:Qlen0.keySet()){
+//		x=x.concat(i+"	"+Qlen0.get(i));
+//		x=x.concat("	"+Qlen1.get(i));
+//		x=x.concat("	"+Qlen2.get(i));
+//		x=x.concat("	"+Qlen3.get(i));
+//	
+//		x=x.concat("\n");
+//	}
+//	x=x.concat("\n");
+//	return x;
+//}
+
+//private TreeMap<Double, Integer> Time0 = new TreeMap<Double, Integer>();
+//private TreeMap<Double, Integer> Time1 = new TreeMap<Double, Integer>();
+//private TreeMap<Double, Integer> Time2 = new TreeMap<Double, Integer>();
+//private TreeMap<Double, Integer> Time3 = new TreeMap<Double, Integer>();
+
+//private TreeMap<Integer, Integer> Qlen0 = new TreeMap<Integer, Integer>();
+//private TreeMap<Integer, Integer> Qlen1 = new TreeMap<Integer, Integer>();
+//private TreeMap<Integer, Integer> Qlen2 = new TreeMap<Integer, Integer>();
+//private TreeMap<Integer, Integer> Qlen3 = new TreeMap<Integer, Integer>();
+
+
+
+
+
+
