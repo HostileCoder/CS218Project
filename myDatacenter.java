@@ -66,7 +66,7 @@ public class myDatacenter extends Datacenter{
 
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="a";
+	private String methodLoad="ded";
 
 	public SimData sd = new SimData();
 	
