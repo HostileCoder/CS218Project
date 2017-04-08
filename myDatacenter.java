@@ -63,10 +63,11 @@ public class myDatacenter extends Datacenter{
 	
 	
 	private int VMcounter=0;
-
+	private myVm VM=null;
+	
 	private int printing=0;
 	private String methodScore="l";
-	private String methodLoad="ded";
+	private String methodLoad="tlb";
 
 	public SimData sd = new SimData();
 	
@@ -99,89 +100,21 @@ public class myDatacenter extends Datacenter{
 		int VmId = cl.getVmId();
 		host = getVmAllocationPolicy().getHost(VmId, UserId);
 		vmlist=host.getVmList();
-		myVm VM = (myVm) host.getVm(VmId, UserId);
+//		myVm VM = (myVm) host.getVm(VmId, UserId);
+		
+		
+		if(VM==null){
+			VM=vmlist.get(new Random().nextInt(4));
+		}
+		
 		RAM= VM.getVram();
 		CacheState = VM.getCacheState();		
 		file = cl.getUE();		
 		
-		
-		if(methodLoad.equals("rr"))
-			{VM = getNextVMRR(host);}
-		else if(methodLoad.equals("s"))
-			{VM=getNextVMSpace();}
-		else if(methodLoad.equals("a"))
-			{VM=getNextVMAccess();}
-		else if(methodLoad.equals("rnd"))
-			{VM=getNextVMRnd();}
-		else if(methodLoad.equals("sUEC"))
-			{VM=getNextVMSpaceUEC();}
-		else if(methodLoad.equals("cpu"))
-			{VM=getNextVMCPU();}
-		else if(methodLoad.equals("ded"))
-			{VM=Ded(file.getCriteria());}
-		else if(methodLoad.equals("qt"))
-			{VM=QTime(file.getCriteria());}
-		else if(methodLoad.equals("qs"))
-			{VM=QSize(file.getCriteria());}
-		else if(methodLoad.equals("tlb"))
-			{VM= TLB(file.getCriteria());}
-		
-		
-		int result= handleRequest(time,VM);	//This modify VM reference
-		history.incTotalRequest();		
-		history.incIdvHit(file.getCriteria(),result);
-		
-	
+
+		VM = handleRequest(time,VM);	
 		cl.setVmId(VM.getId());
-		
-		//Cache:Hit!
-		if(result==1){
-			history.incTotalHit();	
-		}
-		
-
-		//0:Cache:Missed!
-		if(result==0){    
-			history.incTotalMiss();
 			
-			history.incNumInsert();	
-			history.incIdvInsert(file.getCriteria(),1);
-
-			history.addWrites(1);
-			history.incIdvWrite(file.getCriteria(),1);			
-	
-			missInsert++;
-		}
-		
-		//-2:Cache:Missed!, with eviction and insertion
-		if(result==-2){    
-			history.incTotalMiss();
-			
-			history.incNumInsert();	
-			history.incIdvInsert(file.getCriteria(),1);
-
-			history.addWrites(evicted+1);
-			history.incIdvWrite(file.getCriteria(),evicted+1);			
-
-			//System.out.println(evicted);
-			missInsertEvict=missInsertEvict+evicted+1;
-			totalEvicts=totalEvicts+evicted;
-		}
-		
-		
-		//Cache:Missed!, force insertion
-		if(result==-1){    
-			history.incTotalMiss();
-						
-			history.incNumInsert();	
-			history.incIdvInsert(file.getCriteria(),1);
-		
-			history.addWrites(1+1);
-			history.incIdvWrite(file.getCriteria(),1+1);			
-			
-			missForceInsert=missForceInsert+1+1;
-		}
-		
 
 		if(printing==1)
 		System.out.println(time+
@@ -209,11 +142,13 @@ public class myDatacenter extends Datacenter{
 		int userId = cl.getUserId();
 		int vmId = cl.getVmId();
 
+		
 		// time to transfer the files
 		double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
 
 		Host host = getVmAllocationPolicy().getHost(vmId, userId);
 		Vm vm = host.getVm(vmId, userId);
+		
 		CloudletScheduler scheduler = vm.getCloudletScheduler();
 		double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
 
@@ -242,7 +177,7 @@ public class myDatacenter extends Datacenter{
 	}
 	
 
-	private int handleRequest(double time, myVm v) {		
+	private myVm handleRequest(double time, myVm v) {		
 		
 		
 		evicted=0;		
@@ -255,16 +190,42 @@ public class myDatacenter extends Datacenter{
 			findLFUWeight();
 		}
 		
+	
 		
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
 				x.incNumAccess();
 				x.addCPUload(file.getCriteria());
-				return 1;
+				updateData(1);
+				return v;
 			}
 		}
-				
+			
 		
+		if (methodLoad.equals("rr")) {
+			v = getNextVMRR(host);
+		} else if (methodLoad.equals("s")) {
+			v = getNextVMSpace();
+		} else if (methodLoad.equals("a")) {
+			v = getNextVMAccess();
+		} else if (methodLoad.equals("rnd")) {
+			v = getNextVMRnd();
+		} else if (methodLoad.equals("sUEC")) {
+			v = getNextVMSpaceUEC();
+		} else if (methodLoad.equals("cpu")) {
+			v = getNextVMCPU();
+		} else if (methodLoad.equals("ded")) {
+			v = Ded(file.getCriteria());
+		} else if (methodLoad.equals("qt")) {
+			v = QTime(file.getCriteria());
+		} else if (methodLoad.equals("qs")) {
+			v = QSize(file.getCriteria());
+		} else if (methodLoad.equals("tlb")) {
+			v = TLB(file.getCriteria());
+		}
+
+		
+			
 		RAM=v.getVram();
 		used=RAM.getUsed();
 		capacity=RAM.getSize();
@@ -277,7 +238,8 @@ public class myDatacenter extends Datacenter{
 			evicted=0;
 			v.incNumAccess();
 			v.addCPUload(file.getCriteria());
-			return 0;
+			updateData(0);
+			return v;
 		}
 					
 		sumWeight=0;
@@ -306,7 +268,8 @@ public class myDatacenter extends Datacenter{
 			insert(file);
 			v.incNumAccess();
 			v.addCPUload(file.getCriteria());
-			return -1;
+			updateData(-1);
+			return v;
 		}
 					
 		//remove from CachedState
@@ -326,9 +289,8 @@ public class myDatacenter extends Datacenter{
 		v.incNumAccess();
 		v.addCPUload(file.getCriteria());
 		
-		
-		
-		return -2;
+		updateData(-2);		
+		return v;
 	}
 	
 
@@ -405,6 +367,62 @@ public class myDatacenter extends Datacenter{
 		return 1;	
 	}
 	
+public void updateData(int result){
+		
+		history.incTotalRequest();		
+		history.incIdvHit(file.getCriteria(),result);
+		
+		
+		//Cache:Hit!
+		if(result==1){
+			history.incTotalHit();	
+		}
+		
+
+		//0:Cache:Missed!
+		if(result==0){    
+			history.incTotalMiss();
+			
+			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
+
+			history.addWrites(1);
+			history.incIdvWrite(file.getCriteria(),1);			
+	
+			missInsert++;
+		}
+		
+		//-2:Cache:Missed!, with eviction and insertion
+		if(result==-2){    
+			history.incTotalMiss();
+			
+			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
+
+			history.addWrites(evicted+1);
+			history.incIdvWrite(file.getCriteria(),evicted+1);			
+
+			//System.out.println(evicted);
+			missInsertEvict=missInsertEvict+evicted+1;
+			totalEvicts=totalEvicts+evicted;
+		}
+		
+		
+		//Cache:Missed!, force insertion
+		if(result==-1){    
+			history.incTotalMiss();
+						
+			history.incNumInsert();	
+			history.incIdvInsert(file.getCriteria(),1);
+		
+			history.addWrites(1+1);
+			history.incIdvWrite(file.getCriteria(),1+1);			
+			
+			missForceInsert=missForceInsert+1+1;
+		}
+		
+		
+	}
 	
 	
 	public myVm getNextVMRR(Host host){
@@ -530,8 +548,14 @@ public class myDatacenter extends Datacenter{
 	
 	
 	public myVm TLB(int c){
-		return null;
+		myVm.sortQTime((ArrayList<myVm>) vmlist);	
+		myVm vm=null;		
+	    vm=vmlist.get(0);
+	
+		return vm;		
 	}
+	
+	
 	
 }
 

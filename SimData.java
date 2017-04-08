@@ -70,7 +70,7 @@ public class SimData {
 		String x="";
 		for(int i:QlenCDF.keySet()){
 			x=x.concat("\n");	
-			x=x.concat(""+QlenCDF.get(i));	
+			x=x.concat(""+(double)QlenCDF.get(i)/420000);	
 		}
 		
 		x=x.concat("\n");
@@ -79,7 +79,7 @@ public class SimData {
 		
 		for(double i:TimeCDF.keySet()){
 			x=x.concat("\n");
-			x=x.concat(""+TimeCDF.get(i));	
+			x=x.concat(""+(double)TimeCDF.get(i)/420000);	
 		}
 		x=x.concat("\n");
 		x=x.concat(sumQ()+" "+sumT());
