@@ -65,9 +65,9 @@ public class myDatacenter extends Datacenter{
 	private int VMcounter=0;
 	private myVm VM=null;
 	
-	private int printing=0;
+	private int printing=1;
 	private String methodScore="l";
-	private String methodLoad="tlb";
+	private String methodLoad="Squeue";
 
 	public SimData sd = new SimData();
 	
@@ -220,8 +220,10 @@ public class myDatacenter extends Datacenter{
 			v = QTime(file.getCriteria());
 		} else if (methodLoad.equals("qs")) {
 			v = QSize(file.getCriteria());
-		} else if (methodLoad.equals("tlb")) {
-			v = TLB(file.getCriteria());
+		} else if (methodLoad.equals("Swait")) {
+			v = Swait();
+		} else if (methodLoad.equals("Squeue")) {
+			v = Squeue();
 		}
 
 		
@@ -546,6 +548,22 @@ public void updateData(int result){
 		return vm;	
 	}
 	
+	
+	
+	public myVm Swait(){
+		myVm.sortQTime((ArrayList<myVm>) vmlist);	
+		myVm vm=null;		
+	    vm=vmlist.get(0);
+		return vm;		
+	}
+	
+	
+	public myVm Squeue(){
+		myVm.sortQSize((ArrayList<myVm>) vmlist);	
+		myVm vm=null;		
+	    vm=vmlist.get(0);
+		return vm;		
+	}
 	
 	public myVm TLB(int c){
 		myVm.sortQTime((ArrayList<myVm>) vmlist);	
