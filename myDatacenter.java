@@ -9,6 +9,7 @@ import java.util.Random;
 
 
 import org.cloudbus.cloudsim.CloudletScheduler;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.HarddriveStorage;
@@ -66,8 +67,8 @@ public class myDatacenter extends Datacenter{
 	private myVm VM=null;
 	
 	private int printing=1;
-	private String methodScore="l";
-	private String methodLoad="Squeue";
+	private String methodScore="a";
+	private String methodLoad="rnd";
 
 	public SimData sd = new SimData();
 	
@@ -127,10 +128,10 @@ public class myDatacenter extends Datacenter{
 				" 	"+history.L2H/history.L2+
 				" 	"+history.L3H/history.L3+
 				" 	"+history.L4H/history.L4+
-				" 	"+history.L1W/history.L1+
-				" 	"+history.L2W/history.L2+
-				" 	"+history.L3W/history.L3+
-				" 	"+history.L4W/history.L4+
+				" 	"+history.L1W/history.writes+
+				" 	"+history.L2W/history.writes+
+				" 	"+history.L3W/history.writes+
+				" 	"+history.L4W/history.writes+
 				""); 
 		
 
@@ -160,10 +161,13 @@ public class myDatacenter extends Datacenter{
 		
 		
 		for(myVm v:vmlist){
-			CloudletScheduler s = v.getCloudletScheduler();
+			CloudletSchedulerTimeShared s = (CloudletSchedulerTimeShared) v.getCloudletScheduler();
 			double timeFinish=0;
 			for (ResCloudlet rc : s.getCloudletExecList()) {
-				timeFinish=timeFinish+rc.getRemainingCloudletLength();
+				//timeFinish=timeFinish+rc.getRemainingCloudletLength();
+				double rm= rc.getRemainingCloudletLength() /s.getTotalCurrentAvailableMipsForCloudlet(rc, s.getCurrentMipsShare()) * rc.getNumberOfPes();
+				timeFinish=timeFinish+rm;
+				
 			}				
 			v.SetFinishTime(timeFinish);
 			v.setQsize(s.getCloudletExecList().size());
@@ -173,7 +177,7 @@ public class myDatacenter extends Datacenter{
 			}
 		}
 		
-
+		checkCloudletCompletion();
 	}
 	
 
@@ -216,7 +220,7 @@ public class myDatacenter extends Datacenter{
 			v = getNextVMCPU();
 		} else if (methodLoad.equals("ded")) {
 			v = Ded(file.getCriteria());
-		} else if (methodLoad.equals("qt")) {
+		} else if (methodLoad.equals("Qcpu")) {
 			v = QTime(file.getCriteria());
 		} else if (methodLoad.equals("qs")) {
 			v = QSize(file.getCriteria());

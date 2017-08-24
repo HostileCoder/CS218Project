@@ -19,9 +19,9 @@ public class CS298Project2 {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=3750*200;
+    private static int sizeRam=5000*200;
     private static double lambda=1400;
-    private static int numReq= 420000;
+    private static int numReq= 420000; //420000
     private static int UEfileSize=200;
     private static double SLARatio=0.0666;
     

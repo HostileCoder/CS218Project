@@ -20,11 +20,10 @@ public class CS298Project {
 	private static List<Vm> vmlist;
     private static ArrayList<UE_Context> UE = new ArrayList< UE_Context>();
     private static int sizeUE=25000;
-    private static int sizeRam=2500*200;
+    private static int sizeRam=2500*200; 
     private static double lambda=1400;
     private static int numReq=420000;//420000
-    //private static int numReq=420000;
-    private static int UEfileSize=200;
+    private static int UEfileSize=200; //(200kb)
     private static double SLARatio=0.0666;
     
     private static int numVM=4;
@@ -292,6 +291,10 @@ public class CS298Project {
 		
 				// 3. Create PEs and add these into a list.
 				peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
+				peList.add(new Pe(1, new PeProvisionerSimple(mips)));
+				peList.add(new Pe(2, new PeProvisionerSimple(mips)));
+				peList.add(new Pe(3, new PeProvisionerSimple(mips)));
+				
 		
 				// 4. Create Host with its id and list of PEs and add them to the list
 				// of machines
