@@ -126,6 +126,7 @@ public class CS298Project2 {
 				}
 			}	
 			
+			int s=0;
 			
 			vmid=0;
 			Random rn=new Random(); 
@@ -158,7 +159,7 @@ public class CS298Project2 {
 					cloudlet.setUserId(brokerId);
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
-					
+				
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}else {
 					UE_Context u=l1.get(rn.nextInt(l1.size()));
@@ -167,6 +168,7 @@ public class CS298Project2 {
 					cloudlet.setVmId(vmid);
 					cloudletList.add(cloudlet);
 					
+					s++;
 					//broker.bindCloudletToVm(cloudlet.getCloudletId(),vm.getId());
 				}
 				x--;
@@ -175,7 +177,7 @@ public class CS298Project2 {
 				vmid= new Random().nextInt(numVM);
 			}
 			
-
+System.out.println(s);
 										
 			// submit cloudlet list to the broker
 			broker.submitCloudletList(cloudletList);

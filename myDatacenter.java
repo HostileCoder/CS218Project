@@ -66,7 +66,7 @@ public class myDatacenter extends Datacenter{
 	private int VMcounter=0;
 	private myVm VM=null;
 	
-	private int printing=1;
+	private int printing=0;
 	private String methodScore="a";
 	private String methodLoad="rnd";
 
@@ -194,7 +194,7 @@ public class myDatacenter extends Datacenter{
 			findLFUWeight();
 		}
 		
-	
+		
 		
 		for(myVm x:vmlist){
 			if(x.getCacheState().contains(file)){
